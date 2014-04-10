@@ -1,7 +1,7 @@
-package com.spbstu.raytracing.light;
+package com.spbstu.raytracing.lightning;
 
 import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Vector3D;
+import com.spbstu.raytracing.math.Vector;
 
 import java.awt.*;
 
@@ -25,8 +25,8 @@ public class PointLightSource implements LightSource {
     }
 
     @Override
-    public Vector3D getOnPointDirection(Point3D point) {
-        Vector3D onPointDir = new Vector3D(location, point);
+    public Vector getOnPointDirection(Point3D point) {
+        Vector onPointDir = new Vector(location, point);
         onPointDir.normalize();
         return onPointDir;
     }
@@ -39,7 +39,7 @@ public class PointLightSource implements LightSource {
 
     @Override
     public double getIntensity(Point3D point) {
-        double distance = new Vector3D(location, point).length();
+        double distance = new Vector(location, point).length();
         return Math.max(1 - Math.pow(distance / range, 1.0 / fadeExponent), 0);
     }
 }

@@ -1,10 +1,11 @@
 package com.spbstu.raytracing.sceneObject;
 
-import com.spbstu.raytracing.math.Matrix3D;
-import com.spbstu.raytracing.math.Ray3D;
+import com.spbstu.raytracing.math.Matrix;
+import com.spbstu.raytracing.math.Ray;
 import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Vector3D;
-import com.sun.istack.internal.Nullable;
+import com.spbstu.raytracing.math.Vector;
+import com.spbstu.raytracing.sceneObject.attributes.Attribute;
+import com.spbstu.raytracing.sceneObject.attributes.Attributes;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,39 +22,39 @@ public abstract class SceneObject {
     //    Matrix3D matrix;
     Material material;
 
-    Matrix3D matrix, inverted;
+    Matrix matrix, inverted;
 
-    protected SceneObject(Material material, Map<Attributes.Attribute, Matrix3D> attributesMap) {
+    protected SceneObject(Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
         this.material = material;
         this.matrix = Attributes.getCommonMatrix(attributesMap);
-        this.inverted = Matrix3D.invert(matrix);
+        this.inverted = Matrix.invert(matrix);
     }
 
 
-    public abstract Vector3D getStaticNormal(Point3D point);
+    public abstract Vector getStaticNormal(Point3D point);
 
-    public abstract List<Point3D> getStaticCrossPoints(Ray3D ray);
+    public abstract List<Point3D> getStaticCrossPoints(Ray ray);
 
-    public Vector3D getNormal(Point3D point) {
-        Point3D transformed = Matrix3D.multiply(matrix, point);
+    public Vector getNormal(Point3D point) {
+        Point3D transformed = Matrix.multiply(matrix, point);
 
-        Vector3D staticNormal = getStaticNormal(transformed);
+        Vector staticNormal = getStaticNormal(transformed);
         Point3D startPoint = new Point3D(0, 0, 0);
         Point3D endPoint = staticNormal.toPoint3D();
-        Vector3D normal = new Vector3D(Matrix3D.multiply(inverted, startPoint),
-                Matrix3D.multiply(inverted, endPoint));
+        Vector normal = new Vector(Matrix.multiply(inverted, startPoint),
+                Matrix.multiply(inverted, endPoint));
         normal.normalize();
         return normal;
     }
 
-    public List<Point3D> getCrossPoints(Ray3D ray) {
+    public List<Point3D> getCrossPoints(Ray ray) {
         List<Point3D> crossPoints = new ArrayList<>();
         Point3D startPoint = ray.getPoint();
         Point3D endPoint = Point3D.translate(startPoint, ray.getDirectionVector());
-        Ray3D transformedRay = new Ray3D(Matrix3D.multiply(matrix, startPoint),
-                Matrix3D.multiply(matrix, endPoint));
+        Ray transformedRay = new Ray(Matrix.multiply(matrix, startPoint),
+                Matrix.multiply(matrix, endPoint));
         for (Point3D staticCrossPoint : getStaticCrossPoints(transformedRay)) {
-            crossPoints.add(Matrix3D.multiply(inverted, staticCrossPoint));
+            crossPoints.add(Matrix.multiply(inverted, staticCrossPoint));
         }
         return crossPoints;
     }

@@ -1,7 +1,7 @@
-package com.spbstu.raytracing.light;
+package com.spbstu.raytracing.lightning;
 
 import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Vector3D;
+import com.spbstu.raytracing.math.Vector;
 
 import java.awt.*;
 
@@ -12,17 +12,17 @@ import java.awt.*;
  */
 public class DirectionalLightSource implements LightSource {
 
-    final Vector3D direction;
+    final Vector direction;
     final Color color;
 
-    public DirectionalLightSource(Vector3D direction, Color color) {
+    public DirectionalLightSource(Vector direction, Color color) {
         this.direction = direction;
         this.direction.normalize();
         this.color = color;
     }
 
     @Override
-    public Vector3D getOnPointDirection(Point3D point) {
+    public Vector getOnPointDirection(Point3D point) {
         return direction;
     }
 

@@ -14,14 +14,14 @@ public class Point3D {
         this.z = z;
     }
 
-    public Point3D(Vector3D vector) {
+    public Point3D(Vector vector) {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
     }
 
-    public Vector3D toVector3D() {
-        return new Vector3D(x, y, z);
+    public Vector toVector3D() {
+        return new Vector(x, y, z);
     }
 
 
@@ -40,7 +40,7 @@ public class Point3D {
     }
 
     public static double distance(Point3D point1, Point3D point2) {
-        return new Vector3D(point1, point2).length();
+        return new Vector(point1, point2).length();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Point3D {
         return result;
     }
 
-    public  static Point3D translate(Point3D point, Vector3D vector) {
+    public  static Point3D translate(Point3D point, Vector vector) {
         return new Point3D(point.x + vector.x, point.y + vector.y, point.z + vector.z);
     }
 

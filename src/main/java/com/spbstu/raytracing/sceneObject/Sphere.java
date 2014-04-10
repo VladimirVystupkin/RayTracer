@@ -1,9 +1,10 @@
 package com.spbstu.raytracing.sceneObject;
 
-import com.spbstu.raytracing.math.Matrix3D;
 import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Ray3D;
-import com.spbstu.raytracing.math.Vector3D;
+import com.spbstu.raytracing.math.Ray;
+import com.spbstu.raytracing.math.Vector;
+import com.spbstu.raytracing.sceneObject.attributes.Attribute;
+import com.spbstu.raytracing.sceneObject.attributes.Attributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,21 +20,21 @@ public class Sphere extends SceneObject {
     Point3D center;
     double radius;
 
-    public Sphere( double radius, Material material,Map<Attributes.Attribute,Matrix3D> attributes) {
+    public Sphere( double radius, Material material,Map<Attributes.AttributeName,Attribute> attributes) {
         super(material,attributes);
         this.center = new Point3D(0,0,0);
         this.radius = radius;
     }
 
     @Override
-    public Vector3D getStaticNormal(Point3D point) {
-        Vector3D normal = new Vector3D(point.getX() - center.getX(), point.getY() - center.getY(), point.getZ() - center.getZ());
+    public Vector getStaticNormal(Point3D point) {
+        Vector normal = new Vector(point.getX() - center.getX(), point.getY() - center.getY(), point.getZ() - center.getZ());
         normal.normalize();
         return normal;
     }
 
     @Override
-    public List<Point3D> getStaticCrossPoints(Ray3D line) {
+    public List<Point3D> getStaticCrossPoints(Ray line) {
         double x0 = line.getPoint().getX(), y0 = line.getPoint().getY(), z0 = line.getPoint().getZ();
         double m = line.getDirectionVector().getX(), n = line.getDirectionVector().getY(), p = line.getDirectionVector().getZ();
 

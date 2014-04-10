@@ -1,13 +1,13 @@
-package com.spbstu.raytracing.sceneObject;
+package com.spbstu.raytracing.sceneObject.attributes;
 
-import com.spbstu.raytracing.math.Matrix3D;
+import com.spbstu.raytracing.math.Matrix;
 
 /**
  * @author vva
  * @date 01.04.14
  * @description
  */
-public class Scale {
+public class Scale implements Attribute{
 
     double sx, sy, sz;
 
@@ -17,8 +17,9 @@ public class Scale {
         this.sz = sz;
     }
 
-    public Matrix3D getMatrix() {
-        return new Matrix3D(
+    @Override
+    public Matrix getMatrix() {
+        return new Matrix(
                 1 / sx, 0, 0, 0,
                 0, 1 / sy, 0, 0,
                 0, 0, 1 / sz, 0,

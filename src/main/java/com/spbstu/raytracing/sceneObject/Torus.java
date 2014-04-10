@@ -1,9 +1,10 @@
 package com.spbstu.raytracing.sceneObject;
 
 import com.spbstu.raytracing.math.*;
-import com.spbstu.raytracing.old.Solvers;
+import com.spbstu.raytracing.math.Vector;
+import com.spbstu.raytracing.sceneObject.attributes.Attribute;
+import com.spbstu.raytracing.sceneObject.attributes.Attributes;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Torus extends SceneObject {
     BoundingSphere boundingSphere;
     BoundingBox boundingBox;
 
-    public Torus(double innerR, double outerR, Material material, Map<Attributes.Attribute, Matrix3D> attributes) {
+    public Torus(double innerR, double outerR, Material material, Map<Attributes.AttributeName, Attribute> attributes) {
         super(material, attributes);
         this.innerR = innerR;
         this.outerR = outerR;
@@ -29,14 +30,14 @@ public class Torus extends SceneObject {
 
 
     @Override
-    public Vector3D getStaticNormal(Point3D point) {
+    public Vector getStaticNormal(Point3D point) {
         double x = point.getX();
         double y = point.getY();
         double z = point.getZ();
         double normalX = 2 * (x * x + y * y + z * z + outerR * outerR - innerR * innerR) * 2 * x - 8 * outerR * outerR * x;
         double normalY = 2 * (x * x + y * y + z * z + outerR * outerR - innerR * innerR) * 2 * y - 8 * outerR * outerR * y;
         double normalZ = 2 * (x * x + y * y + z * z + outerR * outerR - innerR * innerR) * 2 * z;
-        Vector3D normal = new Vector3D(normalX, normalY, normalZ);
+        Vector normal = new Vector(normalX, normalY, normalZ);
         normal.normalize();
         return normal;
     }
@@ -51,7 +52,7 @@ public class Torus extends SceneObject {
     }
 
     @Override
-    public List<Point3D> getStaticCrossPoints(Ray3D ray) {
+    public List<Point3D> getStaticCrossPoints(Ray ray) {
         if (!boundingSphere.crosses(ray)) {
             return new ArrayList<>();
         }
@@ -76,13 +77,12 @@ public class Torus extends SceneObject {
         double c = c2 - c3;
         double d = d2 - d3;
         double e = e2 - e3;
-        double t[] = Solvers.solveQuartic(a,b,c,d,e);//solve(a, b, c, d, e, new Point3D(x0, y0, z0), new Vector3D(n, m, p));
+        double t[] = Solvers.solveQuartic(a,b,c,d,e);
 
         if (t == null) {
             return new ArrayList<>();
         }
         List<Point3D> crossPoints = new ArrayList<>();
-        double maxDif = 0;
         for (int i = 0; i < t.length; i++) {
             Point3D point = new Point3D(x0 + m * t[i], y0 + n * t[i], z0 + p * t[i]);
             crossPoints.add(point);
@@ -90,37 +90,6 @@ public class Torus extends SceneObject {
         return crossPoints;
     }
 
-    public double[] solve(double a, double b, double c, double d, double e, Point3D point0, Vector3D v) {
-        double t[] = PolynomialRootFinder.getRoots(e, d, c, b, a);
-        double t2[] = Solvers.solveQuartic(a, b, c, d, e);
-        if (t2 == null) {
-            return t;
-        }
-        double x0 = point0.getX();
-        double y0 = point0.getY();
-        double z0 = point0.getZ();
-
-        double m = v.getX();
-        double n = v.getY();
-        double p = v.getZ();
-        double maxDif = 0;
-        for (int i = 0; i < t.length; i++) {
-            Point3D point = new Point3D(x0 + m * t[i], y0 + n * t[i], z0 + p * t[i]);
-            if (getDiff(point) > maxDif) {
-                maxDif = getDiff(a, b, c, d, e, t[i]);
-            }
-        }
-        double maxDif2 = 0;
-
-        for (int i = 0; i < t2.length; i++) {
-            double dif = getDiff(new Point3D(x0 + m * t2[i], y0 + n * t2[i], z0 + p * t2[i]));
-            if (dif > maxDif2) {
-                maxDif2 = dif;
-            }
-
-        }
-        return maxDif < maxDif2 ? t : t2;
-    }
 
 
     public static double getDiff(double a, double b, double c, double d, double e, double x) {

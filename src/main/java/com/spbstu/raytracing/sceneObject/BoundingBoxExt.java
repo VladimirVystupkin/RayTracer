@@ -1,9 +1,8 @@
 package com.spbstu.raytracing.sceneObject;
 
-import com.spbstu.raytracing.ModelTriangle;
 import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Ray3D;
-import com.spbstu.raytracing.math.Vector3D;
+import com.spbstu.raytracing.math.Ray;
+import com.spbstu.raytracing.math.Vector;
 
 import java.util.List;
 
@@ -44,9 +43,9 @@ public class BoundingBoxExt {
         return a < b ? a : b;
     }
 
-    public boolean crosses(Ray3D ray) {
+    public boolean crosses(Ray ray) {
         Point3D rayOrigin = ray.getPoint();
-        Vector3D rayDirection = ray.getDirectionVector();
+        Vector rayDirection = ray.getDirectionVector();
 
         double d0 = -eps;
         double d1 = eps;

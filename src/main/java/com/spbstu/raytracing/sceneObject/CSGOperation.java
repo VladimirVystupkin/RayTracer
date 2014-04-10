@@ -1,10 +1,8 @@
 package com.spbstu.raytracing.sceneObject;
 
 import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Point3DExt;
-import com.spbstu.raytracing.math.Ray3D;
+import com.spbstu.raytracing.math.Ray;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +17,7 @@ public enum CSGOperation {
 
 
     private interface CSGOperationResult {
-        List<Point3D> getCrossPoints(Ray3D ray, SceneObject left, SceneObject right);
+        List<Point3D> getCrossPoints(Ray ray, SceneObject left, SceneObject right);
 
         Point3D getNormal(Point3D point);
 

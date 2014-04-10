@@ -1,8 +1,6 @@
 package com.spbstu.raytracing.sceneObject;
 
-import com.spbstu.raytracing.math.Ray3D;
-
-import java.util.ArrayList;
+import com.spbstu.raytracing.math.Ray;
 
 /**
  * @autor vystupkin
@@ -18,7 +16,7 @@ public class BoundingSphere {
     }
 
 
-    public boolean crosses(Ray3D ray) {
+    public boolean crosses(Ray ray) {
         double a1 = ray.getPoint().getX(), b1 = ray.getPoint().getY(), c1 = ray.getPoint().getZ();
         double m = ray.getDirectionVector().getX(), n = ray.getDirectionVector().getY(), p = ray.getDirectionVector().getZ();
 

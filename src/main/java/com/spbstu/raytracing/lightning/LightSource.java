@@ -1,6 +1,6 @@
-package com.spbstu.raytracing.light;
+package com.spbstu.raytracing.lightning;
 
-import com.spbstu.raytracing.math.Vector3D;
+import com.spbstu.raytracing.math.Vector;
 import com.spbstu.raytracing.math.Point3D;
 
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.awt.*;
  * @description
  */
 public interface LightSource {
-    public Vector3D getOnPointDirection(Point3D point);
+    public Vector getOnPointDirection(Point3D point);
 
     public Color getColor();
 

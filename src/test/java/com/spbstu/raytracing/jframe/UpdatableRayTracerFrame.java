@@ -1,8 +1,7 @@
 package com.spbstu.raytracing.jframe;
 
 import com.spbstu.raytracing.Camera;
-import com.spbstu.raytracing.light.LightSource;
-import com.spbstu.raytracing.ModifiedRayTracer;
+import com.spbstu.raytracing.lightning.LightSource;
 import com.spbstu.raytracing.RayTracer;
 import com.spbstu.raytracing.sceneObject.SceneObject;
 
@@ -14,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * @author vva
@@ -36,7 +34,7 @@ public class UpdatableRayTracerFrame extends JFrame {
             public void run() {
                 RayTracer.RayTracerInfo rayTracerInfo = new RayTracer.RayTracerInfo(Color.WHITE, RayTracer.RayTracerInfo.LightningStyle.PHONG_BLINN, 100);
                 try {
-                    new ModifiedRayTracer(rayTracerInfo, camera, sceneObjects, lightSources).apply();
+                    new RayTracer(rayTracerInfo, camera, sceneObjects, lightSources).apply();
                     ImageIO.write(camera.getImage(), "bmp", new File("result.bmp"));
 //                    isNeedToCalc[0] = false;
                 } catch (InterruptedException | IOException e) {
