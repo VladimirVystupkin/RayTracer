@@ -17,7 +17,7 @@ import java.util.Collection;
 /**
  * @author vva
  * @date 11.03.14
- * @description
+
  */
 public class UpdatableRayTracerFrame extends JFrame {
 
