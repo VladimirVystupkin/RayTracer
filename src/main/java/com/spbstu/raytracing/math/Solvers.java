@@ -1,6 +1,6 @@
-package com.spbstu.raytracing;
+package com.spbstu.raytracing.math;
 
-public final class Solvers {
+public  class Solvers {
     /**
      * Solves the equation ax^2+bx+c=0. Solutions are returned in a sorted array
      * if they exist.

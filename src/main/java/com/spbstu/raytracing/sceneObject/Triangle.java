@@ -3,24 +3,36 @@ package com.spbstu.raytracing.sceneObject;
 import com.spbstu.raytracing.math.*;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
+import com.sun.javafx.beans.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * Class defining triangle
+ *
  * @author vva
- * @date 05.04.14
- * @description
  */
 public class Triangle extends SceneObject {
 
 
-    Point3D a, b, c;
-    Vector normal;
-    Vector v12, v13;
+    final Point a, b, c;
+    final Vector normal;
+    final Vector v12, v13;
 
-    public Triangle(Point3D a, Point3D b, Point3D c, Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
+    /**
+     * Constructor  defining  triangle by  clockwise  going points ,material and object 3D conversation attributes
+     *
+     * @param a             first triangle point
+     * @param b             second triangle point
+     * @param c             third triangle point
+     * @param attributesMap map from attributes
+     * @see com.spbstu.raytracing.sceneObject.SceneObject
+     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
+     */
+    public Triangle(@NonNull final Point a,@NonNull final  Point b,@NonNull final  Point c,
+                    @NonNull final Material material,@NonNull final  Map<Attributes.AttributeName, Attribute> attributesMap) {
         super(material, attributesMap);
         this.a = a;
         this.b = b;
@@ -32,27 +44,29 @@ public class Triangle extends SceneObject {
     }
 
     @Override
-    public Vector getStaticNormal(Point3D point) {
+    @NonNull
+    public Vector getStaticNormal(@NonNull final Point point) {
         return normal;
     }
 
     @Override
-    public List<Point3D> getStaticCrossPoints(Ray ray) {
-        List<Point3D> crossPoints = new ArrayList<>();
+    @NonNull
+    public List<Point> getStaticIntersectionPoints(@NonNull final Ray ray) {
+        List<Point> intersectionPoints = new ArrayList<>();
         Vector T = new Vector(a, ray.getPoint());
         Vector P = Vector.cross(ray.getDirectionVector(), v13);
         Vector Q = Vector.cross(T, v12);
         double coeff = Vector.scalar(P, v12);
         double u = Vector.scalar(P, T) / coeff;
         if (Vector.scalar(Q, v13) < 0) {
-            return crossPoints;
+            return intersectionPoints;
         }
         if (u > 0 && u < 1) {
             double v = Vector.scalar(Q, ray.getDirectionVector()) / coeff;
             if (v > 0 && (u + v < 1)) {
-                crossPoints.add(Point3D.tripleLinearCombination(1 - u - v, u, v, a, b, c));
+                intersectionPoints.add(Point.tripleLinearCombination(1 - u - v, u, v, a, b, c));
             }
         }
-        return crossPoints;
+        return intersectionPoints;
     }
 }

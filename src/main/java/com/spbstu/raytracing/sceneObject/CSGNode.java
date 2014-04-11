@@ -11,7 +11,6 @@ import java.util.Map;
 /**
  * @author vva
  * @date 04.04.14
- * @description
  */
 public class CSGNode extends SceneObject {
 
@@ -26,19 +25,19 @@ public class CSGNode extends SceneObject {
 
 
     @Override
-    public Vector getNormal(Point3D point) {
+    public Vector getNormal(Point point) {
         return ((Relation<Vector, CSGNode>) ((PointExt) point).getInfo()).getKey();
     }
 
 
     //unused
     @Override
-    public Vector getStaticNormal(Point3D point) {
+    public Vector getStaticNormal(Point point) {
         return null;
     }
 
     @Override
-    public List<Point3D> getStaticCrossPoints(Ray ray) {
+    public List<Point> getStaticIntersectionPoints(Ray ray) {
         return null;
     }
 }

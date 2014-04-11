@@ -1,51 +1,47 @@
 package com.spbstu.raytracing.sceneObject;
 
-import com.spbstu.raytracing.math.Point3D;
+import com.spbstu.raytracing.math.Point;
 import com.spbstu.raytracing.math.Ray;
 import com.spbstu.raytracing.math.Vector;
+import com.sun.javafx.beans.annotations.NonNull;
 
 /**
- * @autor vystupkin
- * @date 02.04.14
- * @description
+ * Bounding box to fast detect no intersection
+ * @autor vva
  */
 public class BoundingBox {
 
-    Point3D min, max;
+    Point min, max;
     double eps;
     double t;
 
-    public BoundingBox(Point3D min, Point3D max, double eps) {
+    /**
+     * Constructor which makes box by minimum  and maximum by all axises points
+     * @param min minimum by all axises point
+     * @param max maximum by all axises point
+     * @param eps intersection detection error
+     */
+    public BoundingBox(@NonNull final Point min,@NonNull final Point max,final double eps) {
         this.min = min;
         this.max = max;
         this.eps = eps;
     }
 
-    public BoundingBox(double a, double b, double c, double eps) {
-        this.min = new Point3D(-a, -b, -c);
-        this.max = new Point3D(a, b, c);
-        this.eps = eps;
-    }
 
-
-    private double max(double a, double b) {
-        return a >= b ? a : b;
-    }
-
-    private double min(double a, double b) {
-        return a < b ? a : b;
-    }
-
-    public boolean crosses(Ray ray) {
-        Point3D rayOrigin = ray.getPoint();
+    /**
+     * Detects if bounding box has intersection
+     * @param ray ray to detect intersection
+     * @return true if bounding box has intersection,else - false
+     */
+    public boolean hasIntersection(@NonNull final Ray ray) {
+        Point rayOrigin = ray.getPoint();
         Vector rayDirection = ray.getDirectionVector();
 
         double d0 = -eps;
         double d1 = eps;
-        double dirX = Math.abs(rayDirection.getX())< eps?eps:rayDirection.getX();
-        double dirY = Math.abs(rayDirection.getY())< eps?eps:rayDirection.getY();
-        double dirZ = Math.abs(rayDirection.getZ())< eps?eps:rayDirection.getZ();
-        // if (Math.abs(rayDirection.getX()) > eps) {
+        double dirX = Math.abs(rayDirection.getX()) < eps ? eps : rayDirection.getX();
+        double dirY = Math.abs(rayDirection.getY()) < eps ? eps : rayDirection.getY();
+        double dirZ = Math.abs(rayDirection.getZ()) < eps ? eps : rayDirection.getZ();
         d0 = (min.getX() - rayOrigin.getX()) / dirX;
         d1 = (max.getX() - rayOrigin.getX()) / dirX;
         if (d1 < d0) {
@@ -53,9 +49,6 @@ public class BoundingBox {
             d1 = d0;
             d0 = t;
         }
-        //}
-
-//        if (Math.abs(rayDirection.getY()) > eps) {
         double t0 = (min.getY() - rayOrigin.getY()) / dirY;
         double t1 = (max.getY() - rayOrigin.getY()) / dirY;
 
@@ -64,11 +57,8 @@ public class BoundingBox {
             t1 = t0;
             t0 = t;
         }
-        d0 = max(d0, t0);
-        d1 = min(d1, t1);
-//        }
-
-//        if (Math.abs(rayDirection.getZ()) > eps) {
+        d0 = Math.max(d0, t0);
+        d1 = Math.min(d1, t1);
         t0 = (min.getZ() - rayOrigin.getZ()) / dirZ;
         t1 = (max.getZ() - rayOrigin.getZ()) / dirZ;
         if (t1 < t0) {
@@ -76,26 +66,9 @@ public class BoundingBox {
             t1 = t0;
             t0 = t;
         }
-        d0 = max(d0, t0);
-        d1 = min(d1, t1);
-//        }
-
+        d0 = Math.max(d0, t0);
+        d1 = Math.min(d1, t1);
         return !(d1 < d0 || d0 == -eps);
     }
 
-    public Point3D getMin() {
-        return min;
-    }
-
-    public void setMin(Point3D min) {
-        this.min = min;
-    }
-
-    public Point3D getMax() {
-        return max;
-    }
-
-    public void setMax(Point3D max) {
-        this.max = max;
-    }
 }

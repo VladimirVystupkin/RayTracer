@@ -1,38 +1,45 @@
 package com.spbstu.raytracing.lightning;
 
-import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Vector;
+import com.spbstu.raytracing.math.*;
+import com.spbstu.raytracing.math.Point;
+import com.sun.javafx.beans.annotations.NonNull;
 
 import java.awt.*;
 
 /**
+ * Directional light source class
  * @author vva
- * @date 05.04.14
- * @description
  */
 public class DirectionalLightSource implements LightSource {
 
     final Vector direction;
     final Color color;
 
-    public DirectionalLightSource(Vector direction, Color color) {
-        this.direction = direction;
-        this.direction.normalize();
+    /**
+     * Default constructor which makes directional light source by direction vector and color
+     * @param direction light source direction vector
+     * @param color light source color
+     */
+    public DirectionalLightSource(@NonNull final Vector direction,@NonNull final Color color) {
+        this.direction = direction.getNormalized();
         this.color = color;
     }
 
     @Override
-    public Vector getOnPointDirection(Point3D point) {
+    @NonNull
+    public Vector getOnPointDirection(@NonNull final Point point) {
         return direction;
     }
 
     @Override
+    @NonNull
     public Color getColor() {
         return color;
     }
 
     @Override
-    public double getIntensity(Point3D point) {
+    @NonNull
+    public double getIntensity(@NonNull final Point point) {
         return 1;
     }
 }

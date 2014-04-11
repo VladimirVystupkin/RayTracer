@@ -1,6 +1,6 @@
 package com.spbstu.raytracing.sceneObject;
 
-import com.spbstu.raytracing.math.Point3D;
+import com.spbstu.raytracing.math.Point;
 import com.spbstu.raytracing.math.Ray;
 
 import java.util.List;
@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * @author vva
  * @date 04.04.14
- * @description
  */
 public enum CSGOperation {
     CSG_UNION,
@@ -17,19 +16,19 @@ public enum CSGOperation {
 
 
     private interface CSGOperationResult {
-        List<Point3D> getCrossPoints(Ray ray, SceneObject left, SceneObject right);
+        List<Point> getIntersectionPoints(Ray ray, SceneObject left, SceneObject right);
 
-        Point3D getNormal(Point3D point);
+        Point getNormal(Point point);
 
     }
 
 
 //    private class CSGUnionResult implements CSGOperationResult {
 //        @Override
-//        public List<Point3D> getCrossPoints(Ray3D ray, SceneObject left, SceneObject right) {
-//            List<Point3D> crossPoints = new ArrayList<>(left.getCrossPoints(ray));
-//            crossPoints.addAll(right.getCrossPoints(ray));
-//            return crossPoints;
+//        public List<Point3D> getIntersectionPoints(Ray3D ray, SceneObject left, SceneObject right) {
+//            List<Point3D> intersectionPoints = new ArrayList<>(left.getIntersectionPoints(ray));
+//            intersectionPoints.addAll(right.getIntersectionPoints(ray));
+//            return intersectionPoints;
 //        }
 //    }
 }

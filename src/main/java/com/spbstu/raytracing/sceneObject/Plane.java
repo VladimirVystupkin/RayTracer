@@ -4,56 +4,70 @@ package com.spbstu.raytracing.sceneObject;
 import com.spbstu.raytracing.math.*;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
+import com.sun.javafx.beans.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * Class defining plane
+ *
  * @author vva
- * @date 10.03.14
- * @description
  */
 public class Plane extends SceneObject {
     /**
      * a*x+b*y+c*z+d=0
      */
-    double a, b, c, d;
-    Vector normal;
+    final double a, b, c, d;
+    final Vector normal;
 
-    public Plane(double a, double b, double c, double d, Material material,Map<Attributes.AttributeName,Attribute> attributes) {
-        super(material,attributes);
-        if (a == 0 && b == 0 && c == 0) {
-            throw new IllegalArgumentException("a^2+b^2+c^2>0");
-        }
+    /**
+     * Constructor to make pla by four coefficients(a*x+b*y+c*z+d=0),material and object 3D conversation attributes
+     *
+     * @param a             coefficient for x coordinate
+     * @param b             coefficient for y coordinate
+     * @param c             coefficient for z coordinate
+     * @param d             coefficient defining start point  p0 for plane (d = -a *p0.x - b*p0.y-c*p0.z)
+     * @param material      object material
+     * @param attributesMap map from attributes
+     * @see com.spbstu.raytracing.sceneObject.SceneObject
+     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
+     */
+    public Plane(final double a, final double b, final double c, final double d,
+                 @NonNull final Material material, @NonNull final Map<Attributes.AttributeName, Attribute> attributesMap) {
+        super(material, attributesMap);
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
-        normal = new Vector(a, b, c);
-        normal.normalize();
+        normal = new Vector(a, b, c).getNormalized();
     }
 
-    public Plane(Point3D point, Vector normal, Material material,Map<Attributes.AttributeName,Attribute> attributes) {
-        super(material,attributes);
-        a = normal.getX();
-        b = normal.getY();
-        c = normal.getZ();
-        d = -Vector.scalar(normal, point.toVector3D());
-        this.normal = normal;
-    }
-
-    public boolean isRightToPlane(Point3D point) {
-        return a * point.getX() + b * point.getY() + c * point.getZ() + d >= 0;
-    }
-
-    public double distance(Point3D point) {
-        return Math.abs(a * point.getX() + b * point.getY() + c * point.getZ() + d) / Math.sqrt(a * a + b * b + c * c);
-    }
+//    public Plane(Point point, Vector normal, Material material, Map<Attributes.AttributeName, Attribute> attributes) {
+//        super(material, attributes);
+//        a = normal.getX();
+//        b = normal.getY();
+//        c = normal.getZ();
+//        d = -Vector.scalar(normal, point.toVector3D());
+//        this.normal = normal;
+//    }
 
 
-    public Plane(Point3D point1, Point3D point2, Point3D point3, Material material,Map<Attributes.AttributeName,Attribute> attributes) {
-        super(material,attributes);
+    /**
+     * Constructor to make plane  by 3 points,material and object 3D conversation attributes
+     *
+     * @param point1        first point to make plane
+     * @param point2        second point to make plane
+     * @param point3        third point to make plane
+     * @param material      object material
+     * @param attributesMap map from attributes
+     * @see com.spbstu.raytracing.sceneObject.SceneObject
+     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
+     */
+    public Plane(@NonNull final Point point1, @NonNull final Point point2, @NonNull final Point point3,
+                 @NonNull final Material material, @NonNull final Map<Attributes.AttributeName, Attribute> attributesMap) {
+        super(material, attributesMap);
         double x1 = point1.getX();
         double y1 = point1.getY();
         double z1 = point1.getZ();
@@ -68,34 +82,29 @@ public class Plane extends SceneObject {
         b = (x2 - x1) * (z3 - z1) - (x3 - x1) * (z2 - z1);
         c = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
         d = -x1 * a - y1 * b - z1 * c;
-        normal = new Vector(a, b, c);
-        normal.normalize();
+        normal = new Vector(a, b, c).getNormalized();
 
     }
 
     @Override
-    public Vector getStaticNormal(Point3D point) {
+    @NonNull
+    public Vector getStaticNormal(@NonNull final Point point) {
         return normal;
     }
 
 
-    /**
-     * http://fxdx.ru/page/vzaimnoe-raspolozhenie-prjamoj-i-ploskosti-v-prostranstve-vzaimnoe-raspolozhenie-dvuh-ploskostej
-     *
-     * @param ray
-     * @return
-     */
     @Override
-    public List<Point3D> getStaticCrossPoints(Ray ray) {
+    @NonNull
+    public List<Point> getStaticIntersectionPoints(@NonNull final Ray ray) {
         if (Vector.scalar(ray.getDirectionVector(), normal) == 0) {
             return new ArrayList<>();
         }
         double x0 = ray.getPoint().getX(), y0 = ray.getPoint().getY(), z0 = ray.getPoint().getZ();
         double m = ray.getDirectionVector().getX(), n = ray.getDirectionVector().getY(), p = ray.getDirectionVector().getZ();
         double t = -(a * x0 + b * y0 + c * z0 + d) / (a * m + b * n + c * p);
-        List<Point3D> crossPoints = new ArrayList<Point3D>();
-        crossPoints.add(new Point3D(x0 + m * t, y0 + n * t, z0 + p * t));
-        return crossPoints;
+        List<Point> intersectionPoints = new ArrayList<Point>();
+        intersectionPoints.add(new Point(x0 + m * t, y0 + n * t, z0 + p * t));
+        return intersectionPoints;
     }
 
 }

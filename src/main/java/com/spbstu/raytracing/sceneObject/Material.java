@@ -1,55 +1,86 @@
 package com.spbstu.raytracing.sceneObject;
 
+import com.sun.javafx.beans.annotations.NonNull;
+
 import java.awt.*;
 
 /**
+ * Material class to identify color
+ *
  * @author vva
- * @date 16.03.14
- * @description
  */
 public class Material {
 
-    /**
-     * свойство материала воспринимать фоновое освещение
-     */
-    Component ambient;
+    final Component ambient;
+
+    final Component diffuse;
+
+    final Component specular;
+
+    final int specularPower;
+
+    final double reflectionFactor;
+
+    final double refractionFactor;
+
+    final double refractionIndex;
 
     /**
-     * свойство материала воспринимать рассеянное освещение
+     * Constructor to make material from ambient, diffuse, specular components and specular power,
+     * reflection factor equal to 0, refraction factor equal to 0,refraction index equal to 1
+     *
+     * @param ambient       ambient component
+     * @param diffuse       diffuse component
+     * @param specular      specular component
+     * @param specularPower specular power
      */
-    Component diffuse;
-
-    /**
-     * свойство материала воспринимать зеркальноe отражения
-     */
-    Component specular;
-
-    int specularPower;
-
-    double reflectionFactor;
-
-    double refractionFactor;
-
-    double refractionIndex;
-
-    public Material(Component ambient, Component diffuse, Component specular, int specularPower) {
+    public Material(@NonNull final Component ambient, @NonNull final Component diffuse, @NonNull final Component specular,
+                    final int specularPower) {
         this.ambient = ambient;
         this.diffuse = diffuse;
         this.specular = specular;
         this.specularPower = specularPower;
         this.refractionIndex = 1;
+        reflectionFactor = 0;
+        refractionFactor = 0;
     }
 
-    public Material(Component ambient, Component diffuse, Component specular, int specularPower, double reflectionFactor) {
+
+    /**
+     * Constructor to make material from ambient, diffuse, specular components ,specular power,
+     * and reflection factor, refraction factor equal to 0,refraction index equal to 1
+     *
+     * @param ambient          ambient component
+     * @param diffuse          diffuse component
+     * @param specular         specular component
+     * @param specularPower    specular power
+     * @param reflectionFactor reflection factor
+     */
+    public Material(@NonNull final Component ambient,@NonNull final Component diffuse,@NonNull final Component specular,
+                    final int specularPower, final double reflectionFactor) {
         this.ambient = ambient;
         this.diffuse = diffuse;
         this.specular = specular;
         this.specularPower = specularPower;
         this.reflectionFactor = reflectionFactor;
         this.refractionIndex = 1;
+        refractionFactor = 0;
     }
 
-    public Material(Component ambient, Component diffuse, Component specular, int specularPower, double reflectionFactor, double refractionFactor) {
+
+    /**
+     * Constructor to make material from ambient, diffuse, specular components ,specular power,
+     * reflection factor, refraction factor and refraction index equal to 1
+     *
+     * @param ambient          ambient component
+     * @param diffuse          diffuse component
+     * @param specular         specular component
+     * @param specularPower    specular power
+     * @param reflectionFactor reflection factor
+     * @param refractionFactor refraction factor
+     */
+    public Material(@NonNull final Component ambient,@NonNull final Component diffuse,@NonNull final Component specular,
+                    final int specularPower,final double reflectionFactor,final double refractionFactor) {
         this.ambient = ambient;
         this.diffuse = diffuse;
         this.specular = specular;
@@ -59,8 +90,20 @@ public class Material {
         this.refractionIndex = 1;
     }
 
-
-    public Material(Component ambient, Component diffuse, Component specular, int specularPower, double reflectionFactor, double refractionFactor, double refractionIndex) {
+    /**
+     * Constructor to make material from ambient, diffuse, specular components ,specular power,
+     * reflection factor, refraction factor and refraction
+     *
+     * @param ambient          ambient component
+     * @param diffuse          diffuse component
+     * @param specular         specular component
+     * @param specularPower    specular power
+     * @param reflectionFactor reflection factor
+     * @param refractionFactor refraction factor
+     * @param refractionIndex  refraction index to air
+     */
+    public Material(@NonNull final Component ambient,@NonNull final Component diffuse,@NonNull final Component specular,
+                    final int specularPower,final double reflectionFactor,final double refractionFactor,final double refractionIndex) {
         this.ambient = ambient;
         this.diffuse = diffuse;
         this.specular = specular;
@@ -70,10 +113,19 @@ public class Material {
         this.refractionIndex = refractionIndex;
     }
 
+    /**
+     * Class to define material property to perceive lightning
+     */
     public static class Component {
-        double cR, cG, cB;
+        final double cR, cG, cB;
 
-        public Component(double cR, double cG, double cB) {
+        /**
+         * Constructor defining material property to perceive lightning
+         * @param cR property to perceive red lightning from 0 to 1
+         * @param cG property to perceive green lightning from 0 to 1
+         * @param cB property to perceive blue lightning  from 0 to 1
+         */
+        public Component(final double cR,final double cG,final double cB) {
             this.cR = cR;
             this.cG = cG;
             this.cB = cB;
@@ -81,7 +133,14 @@ public class Material {
     }
 
 
-    public int getColor(int ambientColor, int diffuseColor, int specularColor) {
+    /**
+     * Returns object final color
+     * @param ambientColor ambient color
+     * @param diffuseColor diffuse color
+     * @param specularColor specular color
+     * @return object final color
+     */
+    public int getColor(final int ambientColor,final int diffuseColor,final int specularColor) {
         Color a = new Color(ambientColor);
         Color d = new Color(diffuseColor);
         Color s = new Color(specularColor);

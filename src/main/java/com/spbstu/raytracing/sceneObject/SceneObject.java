@@ -1,11 +1,10 @@
 package com.spbstu.raytracing.sceneObject;
 
-import com.spbstu.raytracing.math.Matrix;
-import com.spbstu.raytracing.math.Ray;
-import com.spbstu.raytracing.math.Point3D;
-import com.spbstu.raytracing.math.Vector;
+import com.spbstu.raytracing.math.*;
+import com.spbstu.raytracing.math.Point;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
+import com.sun.javafx.beans.annotations.NonNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,75 +12,125 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Abstract class for ray tracing scene object
  * @author vva
- * @date 10.03.14
- * @description
  */
 public abstract class SceneObject {
 
-    //    Matrix3D matrix;
-    Material material;
+    final Material material;
+    final Matrix matrix, inverted;
 
-    Matrix matrix, inverted;
-
-    protected SceneObject(Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
+    /**
+     * Scene object constructor by {@link com.spbstu.raytracing.sceneObject.Material} material and
+     * map from attributes({@link com.spbstu.raytracing.sceneObject.attributes.Attributes.AttributeName}->{@link com.spbstu.raytracing.sceneObject.attributes.Attribute})
+     *
+     * @param material      object material
+     * @param attributesMap map from attributes
+     * @see com.spbstu.raytracing.sceneObject.Material
+     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
+     */
+    protected SceneObject(@NonNull final Material material, @NonNull final Map<Attributes.AttributeName, Attribute> attributesMap) {
         this.material = material;
         this.matrix = Attributes.getCommonMatrix(attributesMap);
         this.inverted = Matrix.invert(matrix);
     }
 
 
-    public abstract Vector getStaticNormal(Point3D point);
+    /**
+     * Returns object normal from point without 3D matrix conversation
+     * @param point point to get normal
+     * @return Object normal from point without 3D matrix conversation
+     */
+    @NonNull
+    abstract Vector getStaticNormal(@NonNull final Point point);
 
-    public abstract List<Point3D> getStaticCrossPoints(Ray ray);
+    /**
+     * Returns object intersection points without 3D matrix conversation
+     * @param ray ray to get intersection points
+     * @return object intersection points without 3D matrix conversation
+     */
+    @NonNull
+    public abstract List<Point> getStaticIntersectionPoints(@NonNull final Ray ray);
 
-    public Vector getNormal(Point3D point) {
-        Point3D transformed = Matrix.multiply(matrix, point);
+
+    /**
+     * Returns object normal from point with current 3D matrix conversation
+     * @param point point to get normal
+     * @return Object normal from point with current 3D matrix conversation
+     */
+    @NonNull
+    public Vector getNormal(@NonNull final Point point) {
+        Point transformed = Matrix.multiply(matrix, point);
 
         Vector staticNormal = getStaticNormal(transformed);
-        Point3D startPoint = new Point3D(0, 0, 0);
-        Point3D endPoint = staticNormal.toPoint3D();
-        Vector normal = new Vector(Matrix.multiply(inverted, startPoint),
-                Matrix.multiply(inverted, endPoint));
-        normal.normalize();
-        return normal;
+        Point startPoint = new Point(0, 0, 0);
+        Point endPoint = staticNormal.toPoint3D();
+        return new Vector(Matrix.multiply(inverted, startPoint),
+                Matrix.multiply(inverted, endPoint)).getNormalized();
     }
 
-    public List<Point3D> getCrossPoints(Ray ray) {
-        List<Point3D> crossPoints = new ArrayList<>();
-        Point3D startPoint = ray.getPoint();
-        Point3D endPoint = Point3D.translate(startPoint, ray.getDirectionVector());
+    /**
+     * Returns object intersection points with current 3D matrix conversation
+     * @param ray ray to get intersection points
+     * @return object intersection points with current 3D matrix conversation
+     */
+    @NonNull
+    public List<Point> getIntersectionPoints(@NonNull final Ray ray) {
+        List<Point> intersectionPoints = new ArrayList<>();
+        Point startPoint = ray.getPoint();
+        Point endPoint = Point.translate(startPoint, ray.getDirectionVector());
         Ray transformedRay = new Ray(Matrix.multiply(matrix, startPoint),
                 Matrix.multiply(matrix, endPoint));
-        for (Point3D staticCrossPoint : getStaticCrossPoints(transformedRay)) {
-            crossPoints.add(Matrix.multiply(inverted, staticCrossPoint));
+        for (com.spbstu.raytracing.math.Point staticIntersectionPoint : getStaticIntersectionPoints(transformedRay)) {
+            intersectionPoints.add(Matrix.multiply(inverted, staticIntersectionPoint));
         }
-        return crossPoints;
+        return intersectionPoints;
     }
 
 
-    public int getColor(int ambientColor, int diffuseColor, int specularColor) {
-        return material.getColor(ambientColor, diffuseColor, specularColor);
-    }
-
-    public Color getColor(Color ambientColor, Color diffuseColor, Color specularColor) {
+    /**
+     * Returns result object color depending on material
+     * @param ambientColor  ambient color
+     * @param diffuseColor diffuse color
+     * @param specularColor specular color
+     * @return result object color depending on material
+     * @see com.spbstu.raytracing.sceneObject.Material
+     */
+    @NonNull
+    public Color getColor(@NonNull final Color ambientColor,@NonNull final Color diffuseColor,@NonNull final Color specularColor) {
         return new Color(material.getColor(ambientColor.getRGB(), diffuseColor.getRGB(), specularColor.getRGB()));
     }
 
+    /**
+     * Returns material specular power
+     * @return material specular power
+     */
     public int getSpecularPower() {
         return material.specularPower;
     }
 
+    /**
+     * Returns material reflection factor
+     * @return material reflection factor
+     */
     public double getReflectionFactor() {
         return material.reflectionFactor;
     }
 
+    /**
+     * Returns material refraction factor
+     * @return material refraction factor
+     */
     public double getRefractionFactor() {
         return material.refractionFactor;
     }
 
-    public double getRefractionIndex(){
-        return   material.refractionIndex;
+    /**
+     * Returns material refraction index to air
+     * @return material refraction index to air
+     */
+    public double getRefractionIndex() {
+        return material.refractionIndex;
     }
 
 }

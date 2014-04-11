@@ -4,59 +4,74 @@ import com.spbstu.raytracing.Relation;
 import com.spbstu.raytracing.math.*;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
+import com.sun.javafx.beans.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * Class defining *.obj file model
+ *
  * @author vva
- * @date 02.04.14
- * @description
  */
 public class ModelObject extends SceneObject {
-    List<ModelTriangle> triangles;
-    BoundingBox boundingBox;
+    final List<ModelTriangle> triangles;
+    final BoundingBox boundingBox;
 
-    public ModelObject(Relation<BoundingBox, List<ModelTriangle>> relation, Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
+
+    /**
+     * Constructor which makes  defining *.obj file model from triangle list with bounding box, material and object 3D conversation attributes
+     *
+     * @param relation      triangle list with bounding box
+     * @param material      object material
+     * @param attributesMap map from attributes
+     * @see com.spbstu.raytracing.sceneObject.SceneObject
+     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
+     */
+    public ModelObject(@NonNull final Relation<BoundingBox, List<ModelTriangle>> relation,@NonNull final Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
         super(material, attributesMap);
         this.triangles = relation.getValue();
         this.boundingBox = relation.getKey();
     }
 
     @Override
-    public Vector getNormal(Point3D point) {
+    @NonNull
+    public Vector getNormal(@NonNull final Point point) {
         return ((Relation<Vector, ModelTriangle>) ((PointExt) point).getInfo()).getKey();
     }
 
     @Override
-    public List<Point3D> getCrossPoints(Ray ray) {
-        List<Point3D> crossPoints = new ArrayList<>();
-        Point3D startPoint = ray.getPoint();
-        Point3D endPoint = Point3D.translate(startPoint, ray.getDirectionVector());
+    @NonNull
+    public List<Point> getIntersectionPoints(@NonNull final Ray ray) {
+        List<Point> intersectionPoints = new ArrayList<>();
+        Point startPoint = ray.getPoint();
+        Point endPoint = Point.translate(startPoint, ray.getDirectionVector());
         Ray transformedRay = new Ray(Matrix.multiply(matrix, startPoint),
                 Matrix.multiply(matrix, endPoint));
-        if (!boundingBox.crosses(transformedRay)) {
-            return crossPoints;
+        if (!boundingBox.hasIntersection(transformedRay)) {
+            return intersectionPoints;
         }
-        for (Point3D staticCrossPoint : getStaticCrossPoints(transformedRay)) {
-            crossPoints.add(Matrix.multiply(inverted, (PointExt) staticCrossPoint));
+        for (Point staticIntersectionPoint : getStaticIntersectionPoints(transformedRay)) {
+            intersectionPoints.add(Matrix.multiply(inverted, (PointExt) staticIntersectionPoint));
 
         }
-        return crossPoints;
+        return intersectionPoints;
     }
 
     @Override
-    public Vector getStaticNormal(Point3D point) {
+    @NonNull
+    public Vector getStaticNormal(@NonNull final Point point) {
         return new Vector(1, 0, 0);//unused
     }
 
     @Override
-    public List<Point3D> getStaticCrossPoints(Ray ray) {
-        List<Point3D> crossPoints = new ArrayList<>();
+    @NonNull
+    public List<Point> getStaticIntersectionPoints(Ray ray) {
+        List<Point> intersectionPoints = new ArrayList<>();
         for (ModelTriangle triangle : triangles) {
-            crossPoints.addAll(triangle.getCrossPoints(ray));
+            intersectionPoints.addAll(triangle.getIntersectionPoints(ray));
         }
-        return crossPoints;
+        return intersectionPoints;
     }
 }

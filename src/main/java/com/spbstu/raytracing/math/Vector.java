@@ -1,96 +1,146 @@
 package com.spbstu.raytracing.math;
 
+import com.sun.javafx.beans.annotations.NonNull;
+
 import java.lang.Object;
 
 /**
+ * 3D vector class
+ *
  * @author vva
- * @date 10.03.14
- * @description
  */
 public class Vector {
 
-    double x, y, z;
-    double length;
+    final double x, y, z;
 
-    public Vector(double x, double y, double z) {
+    /**
+     * Constuctor which makes vector from to coordinates
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     */
+    public Vector(final double x, final double y, final double z) {
         this.x = x;
         this.y = y;
         this.z = z;
-        length = calcLength();
     }
 
-    private double calcLength() {
+
+    /**
+     * Constructor  to make vector from 2 points
+     *
+     * @param startPoint vector start point
+     * @param endPoint   vector end point
+     */
+    public Vector(@NonNull final Point startPoint, @NonNull final Point endPoint) {
+        this.x = endPoint.x - startPoint.x;
+        this.y = endPoint.y - startPoint.y;
+        this.z = endPoint.z - startPoint.z;
+    }
+
+    /**
+     * Returns current  vector length
+     *
+     * @return current  vector length
+     */
+    public double length() {
         return Math.sqrt(x * x + y * y + z * z);
     }
 
-    public void update(Point3D startPoint, Point3D endPoint) {
-        this.x = endPoint.x - startPoint.x;
-        this.y = endPoint.y - startPoint.y;
-        this.z = endPoint.z - startPoint.z;
-        length = calcLength();
+    /**
+     * Normalizes vector and recalculates vector length
+     */
+    public Vector getNormalized() {
+        double length = length();
+        return new Vector(x / length,
+                y / length,
+                z / length);
     }
 
-    public Vector(Point3D startPoint, Point3D endPoint) {
-        this.x = endPoint.x - startPoint.x;
-        this.y = endPoint.y - startPoint.y;
-        this.z = endPoint.z - startPoint.z;
-        length = calcLength();
-    }
-
-    public double length() {
-        return length;
-    }
-
-    public void normalize() {
-        x /= length;
-        y /= length;
-        z /= length;
-        length = calcLength();
-    }
-
-    public static double scalar(Vector a, Vector b) {
+    /**
+     * Returns vector scalar multiplication (dot product)
+     *
+     * @param a first vector to scalar multiplication
+     * @param b second vector to scalar multiplication
+     * @return scalar multiplication result
+     */
+    public static double scalar(@NonNull final Vector a, @NonNull final Vector b) {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    public static Vector cross(Vector a, Vector b) {
+    /**
+     * Returns vector cross multiplication (cross product)
+     *
+     * @param a first vector to cross multiplication
+     * @param b second vector to cross multiplication
+     * @return cross multiplication result
+     */
+    public static Vector cross(@NonNull final Vector a,@NonNull final Vector b) {
         return new Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
     }
 
+    /**
+     * Returns vector x coordinate
+     *
+     * @return vector x coordinate
+     */
     public double getX() {
         return x;
     }
 
+
+    /**
+     * Returns vector y coordinate
+     *
+     * @return vector y coordinate
+     */
     public double getY() {
         return y;
     }
 
+
+    /**
+     * Returns vector z coordinate
+     *
+     * @return vector z coordinate
+     */
     public double getZ() {
         return z;
     }
 
     /**
-     * c = a+b
+     * Returns vector addition
      *
-     * @param a
-     * @param b
-     * @return c
+     * @param a vector to add
+     * @param b addition vector
+     * @return new vector c = a+b
      */
-    public static Vector add(Vector a, Vector b) {
+    @NonNull
+    public static Vector add(@NonNull final Vector a, @NonNull final Vector b) {
         return new Vector(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
     /**
-     * c = a-b
+     * Returns vector subtraction
      *
-     * @param a
-     * @param b
-     * @return c
+     * @param a vector to subtract
+     * @param b subtraction vector
+     * @return new vector c = a-b
      */
-    public static Vector sub(Vector a, Vector b) {
+    @NonNull
+    public static Vector sub(@NonNull final Vector a, @NonNull final Vector b) {
         return new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
-    public static Vector add(Vector... vectors) {
+    /**
+     * Returns multiple vector addition
+     *
+     * @param vectors collection of vectors to get addition
+     * @return new addition vector
+     */
+    @NonNull
+    public static Vector add(@NonNull final Vector... vectors) {
         double x = 0, y = 0, z = 0;
         for (Vector vector : vectors) {
             x += vector.x;
@@ -100,18 +150,29 @@ public class Vector {
         return new Vector(x, y, z);
     }
 
-    public static Vector onNumber(Vector vector, double c) {
+    /**
+     * Multiplies vector on number
+     *
+     * @param vector vector to multiply
+     * @param c      multiplication coefficient
+     * @return new vector b = a*c
+     */
+    @NonNull
+    public static Vector onNumber(@NonNull final Vector vector, final double c) {
         return new Vector(vector.x * c, vector.y * c, vector.z * c);
     }
 
 
-    public Point3D toPoint3D() {
-        return new Point3D(x, y, z);
+    /**
+     * Vector to point conversation
+     *
+     * @return vector to point conversation
+     */
+    @NonNull
+    public Point toPoint3D() {
+        return new Point(x, y, z);
     }
 
-    public Point3D toPoint3D(Object info) {
-        return new PointExt(x, y, z, info);
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -140,10 +201,33 @@ public class Vector {
     }
 
 
-    public static Vector doubleLinearCombination(double ca, double cb, Vector a, Vector b) {
+    /**
+     * Vector double linear combination
+     *
+     * @param ca coefficient for vector a
+     * @param cb coefficient for vector b
+     * @param a  first vector to double linear combination
+     * @param b  second vector to double linear combination
+     * @return new vector - double linear combination result
+     */
+    @NonNull
+    public static Vector doubleLinearCombination(final double ca, final double cb,
+                                                 @NonNull final Vector a, @NonNull final Vector b) {
         return new Vector(ca * a.x + cb * b.x, ca * a.y + cb * b.y, ca * a.z + cb * b.z);
     }
 
+
+    /**
+     * Vector triple linear combination
+     *
+     * @param ca coefficient for vector a
+     * @param cb coefficient for vector b
+     * @param cc coefficient for vector c
+     * @param a  first vector to triple linear combination
+     * @param b  second vector to triple linear combination
+     * @param c  third vector to triple linear combination
+     * @return new vector - triple linear combination result
+     */
     public static Vector tripleLinearCombination(double ca, double cb, double cc, Vector a, Vector b, Vector c) {
         return new Vector(ca * a.x + cb * b.x + cc * c.x, ca * a.y + cb * b.y + cc * c.y, ca * a.z + cb * b.z + cc * c.z);
     }
@@ -154,7 +238,8 @@ public class Vector {
                 "x=" + x +
                 ", y=" + y +
                 ", z=" + z +
-                ", length=" + length +
+                ", length=" + length() +
                 '}';
     }
+
 }
