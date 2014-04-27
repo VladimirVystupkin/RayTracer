@@ -23,7 +23,7 @@ public class Plane extends SceneObject {
     final Vector normal;
 
     /**
-     * Constructor to make pla by four coefficients(a*x+b*y+c*z+d=0),material and object 3D conversation attributes
+     * Constructor to make plane by four coefficients(a*x+b*y+c*z+d=0),material and object 3D conversation attributes
      *
      * @param a             coefficient for x coordinate
      * @param b             coefficient for y coordinate
