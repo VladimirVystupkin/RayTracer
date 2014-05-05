@@ -1,0 +1,1 @@
+java -jar rayTracer-1.0-SNAPSHOT.jar --scene=scene.yml --resolution_x=1024 --resolution_y=1024 --output=result.bmp --trace_depth=3

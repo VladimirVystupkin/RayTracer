@@ -70,8 +70,9 @@ public class MainClass {
             new RayTracer(rayTracerInfo, camera, sceneObjects, lightSources).apply();
             System.out.println("Output image created successfully");
             System.out.println("Trying to save output image as " + outputFile);
-            if (!outputFile.endsWith(".jpeg") || !outputFile.endsWith(".jpg") || outputFile.endsWith(".bmp")) {
+            if (!outputFile.endsWith(".jpeg") && !outputFile.endsWith(".jpg") && !outputFile.endsWith(".bmp")) {
                 System.out.println("Unknown format ." + outputFile.split("\\.")[outputFile.split("\\.").length - 1]);
+                return;
             }
             ImageIO.write(camera.getImage(), outputFile.split("\\.")[outputFile.split("\\.").length - 1], new File(outputFile));
             System.out.println("Output image saved successfully");

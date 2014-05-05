@@ -8,7 +8,6 @@ import com.spbstu.raytracing.sceneObject.IntersectionInfo;
 import com.spbstu.raytracing.sceneObject.SceneObject;
 
 
-
 import java.awt.*;
 import java.util.*;
 import java.util.List;
