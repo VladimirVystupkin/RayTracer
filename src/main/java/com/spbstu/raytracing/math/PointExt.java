@@ -1,6 +1,6 @@
 package com.spbstu.raytracing.math;
 
-import com.sun.javafx.beans.annotations.NonNull;
+
 
 /**
  * A {@link com.spbstu.raytracing.math.Point} extension to keep inner info
@@ -19,7 +19,7 @@ public class PointExt extends Point {
      * @param z    z coordinate
      * @param info inner info
      */
-    public PointExt(final double x, final double y, final double z, @NonNull final Object info) {
+    public PointExt(final double x, final double y, final double z, final Object info) {
         super(x, y, z);
         this.info = info;
     }
@@ -31,7 +31,7 @@ public class PointExt extends Point {
      * @param point {@link com.spbstu.raytracing.math.Point} for conversation
      * @param info  inner info
      */
-    public PointExt(@NonNull final Point point, @NonNull final Object info) {
+    public PointExt(final Point point, final Object info) {
         super(point.x, point.y, point.z);
         this.info = info;
     }
@@ -41,7 +41,7 @@ public class PointExt extends Point {
      *
      * @return inner info
      */
-    @NonNull
+
     public Object getInfo() {
         return info;
     }

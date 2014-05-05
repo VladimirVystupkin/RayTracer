@@ -1,77 +1,64 @@
 package com.spbstu.raytracing.sceneObject;
 
+import com.spbstu.raytracing.ModelObjectParserDefault;
 import com.spbstu.raytracing.Relation;
 import com.spbstu.raytracing.math.*;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
-import com.sun.javafx.beans.annotations.NonNull;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Class defining *.obj file model
- *
  * @author vva
  */
 public class ModelObject extends SceneObject {
     final List<ModelTriangle> triangles;
     final BoundingBox boundingBox;
 
-
-    /**
-     * Constructor which makes  defining *.obj file model from triangle list with bounding box, material and object 3D conversation attributes
-     *
-     * @param relation      triangle list with bounding box
-     * @param material      object material
-     * @param attributesMap map from attributes
-     * @see com.spbstu.raytracing.sceneObject.SceneObject
-     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
-     */
-    public ModelObject(@NonNull final Relation<BoundingBox, List<ModelTriangle>> relation,@NonNull final Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
+    public ModelObject(final Relation<BoundingBox, List<ModelTriangle>> relation, final Material material, final Map<Attributes.AttributeName, Attribute> attributesMap) {
         super(material, attributesMap);
         this.triangles = relation.getValue();
         this.boundingBox = relation.getKey();
     }
 
     @Override
-    @NonNull
-    public Vector getNormal(@NonNull final Point point) {
-        return ((Relation<Vector, ModelTriangle>) ((PointExt) point).getInfo()).getKey();
+
+    public List<IntersectionInfo> getStaticIntersectionInfo(final Ray ray) {
+        List<IntersectionInfo> intersectionInfoList = new ArrayList<>();
+        for (ModelTriangle triangle : triangles) {
+            intersectionInfoList.addAll(triangle.getIntersectionInfo(ray, material));
+        }
+        return intersectionInfoList;
     }
 
-    @Override
-    @NonNull
-    public List<Point> getIntersectionPoints(@NonNull final Ray ray) {
-        List<Point> intersectionPoints = new ArrayList<>();
+
+    public List<IntersectionInfo> getIntersectionInfo(final Ray ray) {
+        List<IntersectionInfo> intersectionInfoList = new ArrayList<>();
         Point startPoint = ray.getPoint();
         Point endPoint = Point.translate(startPoint, ray.getDirectionVector());
         Ray transformedRay = new Ray(Matrix.multiply(matrix, startPoint),
                 Matrix.multiply(matrix, endPoint));
         if (!boundingBox.hasIntersection(transformedRay)) {
-            return intersectionPoints;
+            return intersectionInfoList;
         }
-        for (Point staticIntersectionPoint : getStaticIntersectionPoints(transformedRay)) {
-            intersectionPoints.add(Matrix.multiply(inverted, (PointExt) staticIntersectionPoint));
-
+        for (IntersectionInfo info : getStaticIntersectionInfo(transformedRay)) {
+            Point intersectionPoint = Matrix.multiply(inverted, info.getPoint());
+            Point normalStartPoint = new Point(0, 0, 0);
+            Point normalEndPoint = info.getNormal().toPoint3D();
+            Vector normal = new Vector(Matrix.multiply(inverted, normalStartPoint),
+                    Matrix.multiply(inverted, normalEndPoint)).getNormalized();
+            intersectionInfoList.add(new IntersectionInfo(intersectionPoint, normal, info.getMaterial()));
         }
-        return intersectionPoints;
+        return intersectionInfoList;
     }
 
-    @Override
-    @NonNull
-    public Vector getStaticNormal(@NonNull final Point point) {
-        return new Vector(1, 0, 0);//unused
-    }
 
-    @Override
-    @NonNull
-    public List<Point> getStaticIntersectionPoints(Ray ray) {
-        List<Point> intersectionPoints = new ArrayList<>();
-        for (ModelTriangle triangle : triangles) {
-            intersectionPoints.addAll(triangle.getIntersectionPoints(ray));
-        }
-        return intersectionPoints;
+    public static ModelObject fromMap(final HashMap hashMap, final Material material, final HashMap<Attributes.AttributeName, Attribute> attributeNameAttributeHashMap) throws IOException {
+        return new ModelObject(ModelObjectParserDefault.parse((String) hashMap.get("file_name")), material, attributeNameAttributeHashMap);
     }
 }

@@ -4,35 +4,22 @@ import com.spbstu.raytracing.math.*;
 import com.spbstu.raytracing.math.Vector;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
-import com.sun.javafx.beans.annotations.NonNull;
+
 
 import java.util.*;
 import java.util.List;
 
 /**
- * Class defining torus
- *
- * @autor vva
+ * @author vva
  */
 public class Torus extends SceneObject {
 
 
     final double tubeRadius, radius;
-    @NonNull
+
     final BoundingSphere boundingSphere;
 
-
-    /**
-     * Constructor defining torus by radius, tube radius,material and object 3D conversation attributes
-     *
-     * @param tubeRadius    tube radius
-     * @param radius        radius
-     * @param material      object material
-     * @param attributesMap map from attributes
-     * @see com.spbstu.raytracing.sceneObject.SceneObject
-     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
-     */
-    public Torus(final double tubeRadius, final double radius, @NonNull final Material material, @NonNull final Map<Attributes.AttributeName, Attribute> attributesMap) {
+    public Torus(final double tubeRadius, final double radius, final Material material, final Map<Attributes.AttributeName, Attribute> attributesMap) {
         super(material, attributesMap);
         this.tubeRadius = tubeRadius;
         this.radius = radius;
@@ -40,9 +27,7 @@ public class Torus extends SceneObject {
     }
 
 
-    @Override
-    @NonNull
-    public Vector getStaticNormal(@NonNull final Point point) {
+    Vector getNormal(final Point point) {
         double x = point.getX();
         double y = point.getY();
         double z = point.getZ();
@@ -53,9 +38,7 @@ public class Torus extends SceneObject {
     }
 
 
-    @Override
-    @NonNull
-    public List<Point> getStaticIntersectionPoints(@NonNull final Ray ray) {
+    public List<IntersectionInfo> getStaticIntersectionInfo(final Ray ray) {
         if (!boundingSphere.hasIntersection(ray)) {
             return new ArrayList<>();
         }
@@ -85,11 +68,16 @@ public class Torus extends SceneObject {
         if (t == null) {
             return new ArrayList<>();
         }
-        List<Point> intersectionPoints = new ArrayList<>();
+        List<IntersectionInfo> intersectionInfoList = new ArrayList<>();
         for (int i = 0; i < t.length; i++) {
             Point point = new Point(x0 + m * t[i], y0 + n * t[i], z0 + p * t[i]);
-            intersectionPoints.add(point);
+            intersectionInfoList.add(new IntersectionInfo(point, getNormal(point), material));
         }
-        return intersectionPoints;
+        return intersectionInfoList;
+    }
+
+
+    public static Torus fromMap(final HashMap hashMap, final Material material, final Map<Attributes.AttributeName, Attribute> attributesMap) {
+        return new Torus(Double.parseDouble(hashMap.get("tube_radius").toString()), Double.parseDouble(hashMap.get("radius").toString()), material, attributesMap);
     }
 }

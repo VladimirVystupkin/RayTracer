@@ -4,38 +4,23 @@ package com.spbstu.raytracing.sceneObject;
 import com.spbstu.raytracing.math.*;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
-import com.sun.javafx.beans.annotations.NonNull;
+
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Class defining plane
- *
  * @author vva
  */
 public class Plane extends SceneObject {
-    /**
-     * a*x+b*y+c*z+d=0
-     */
+
     final double a, b, c, d;
     final Vector normal;
 
-    /**
-     * Constructor to make plane by four coefficients(a*x+b*y+c*z+d=0),material and object 3D conversation attributes
-     *
-     * @param a             coefficient for x coordinate
-     * @param b             coefficient for y coordinate
-     * @param c             coefficient for z coordinate
-     * @param d             coefficient defining start point  p0 for plane (d = -a *p0.x - b*p0.y-c*p0.z)
-     * @param material      object material
-     * @param attributesMap map from attributes
-     * @see com.spbstu.raytracing.sceneObject.SceneObject
-     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
-     */
     public Plane(final double a, final double b, final double c, final double d,
-                 @NonNull final Material material, @NonNull final Map<Attributes.AttributeName, Attribute> attributesMap) {
+                 final Material material, final Map<Attributes.AttributeName, Attribute> attributesMap) {
         super(material, attributesMap);
         this.a = a;
         this.b = b;
@@ -44,29 +29,17 @@ public class Plane extends SceneObject {
         normal = new Vector(a, b, c).getNormalized();
     }
 
-//    public Plane(Point point, Vector normal, Material material, Map<Attributes.AttributeName, Attribute> attributes) {
-//        super(material, attributes);
-//        a = normal.getX();
-//        b = normal.getY();
-//        c = normal.getZ();
-//        d = -Vector.scalar(normal, point.toVector3D());
-//        this.normal = normal;
-//    }
+    public Plane(final Point point, final Vector normal, final Material material, final Map<Attributes.AttributeName, Attribute> attributes) {
+        super(material, attributes);
+        a = normal.getX();
+        b = normal.getY();
+        c = normal.getZ();
+        d = -Vector.scalar(normal, point.toVector3D());
+        this.normal = normal;
+    }
 
-
-    /**
-     * Constructor to make plane  by 3 points,material and object 3D conversation attributes
-     *
-     * @param point1        first point to make plane
-     * @param point2        second point to make plane
-     * @param point3        third point to make plane
-     * @param material      object material
-     * @param attributesMap map from attributes
-     * @see com.spbstu.raytracing.sceneObject.SceneObject
-     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
-     */
-    public Plane(@NonNull final Point point1, @NonNull final Point point2, @NonNull final Point point3,
-                 @NonNull final Material material, @NonNull final Map<Attributes.AttributeName, Attribute> attributesMap) {
+    public Plane(final Point point1, final Point point2, final Point point3,
+                 final Material material, final Map<Attributes.AttributeName, Attribute> attributesMap) {
         super(material, attributesMap);
         double x1 = point1.getX();
         double y1 = point1.getY();
@@ -86,25 +59,34 @@ public class Plane extends SceneObject {
 
     }
 
-    @Override
-    @NonNull
-    public Vector getStaticNormal(@NonNull final Point point) {
-        return normal;
-    }
-
 
     @Override
-    @NonNull
-    public List<Point> getStaticIntersectionPoints(@NonNull final Ray ray) {
+
+    public List<IntersectionInfo> getStaticIntersectionInfo(final Ray ray) {
         if (Vector.scalar(ray.getDirectionVector(), normal) == 0) {
             return new ArrayList<>();
         }
         double x0 = ray.getPoint().getX(), y0 = ray.getPoint().getY(), z0 = ray.getPoint().getZ();
         double m = ray.getDirectionVector().getX(), n = ray.getDirectionVector().getY(), p = ray.getDirectionVector().getZ();
         double t = -(a * x0 + b * y0 + c * z0 + d) / (a * m + b * n + c * p);
-        List<Point> intersectionPoints = new ArrayList<Point>();
-        intersectionPoints.add(new Point(x0 + m * t, y0 + n * t, z0 + p * t));
-        return intersectionPoints;
+        List<IntersectionInfo> intersectionInfoList = new ArrayList<IntersectionInfo>();
+        intersectionInfoList.add(new IntersectionInfo(new Point(x0 + m * t, y0 + n * t, z0 + p * t), normal, material));
+        return intersectionInfoList;
     }
 
+
+    public static Plane fromMap(final HashMap hashMap, final Material material, final Map<Attributes.AttributeName, Attribute> attributesMap) {
+        HashMap positionAttributes = (HashMap) hashMap.get("position");
+        double x = positionAttributes.containsKey("x") ? Double.parseDouble(positionAttributes.get("x").toString()) : 0;
+        double y = positionAttributes.containsKey("y") ? Double.parseDouble(positionAttributes.get("y").toString()) : 0;
+        double z = positionAttributes.containsKey("z") ? Double.parseDouble(positionAttributes.get("z").toString()) : 0;
+        Point pos = new Point(x, y, z);
+        HashMap normalAttributes = (HashMap) hashMap.get("normal");
+        double nx = normalAttributes.containsKey("x") ? Double.parseDouble(normalAttributes.get("x").toString()) : 0;
+        double ny = normalAttributes.containsKey("y") ? Double.parseDouble(normalAttributes.get("y").toString()) : 0;
+        double nz = normalAttributes.containsKey("z") ? Double.parseDouble(normalAttributes.get("z").toString()) : 0;
+        Vector normal = new Vector(nx, ny, nz);
+        return new Plane(pos, normal, material, attributesMap);
+
+    }
 }

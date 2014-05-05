@@ -3,11 +3,10 @@ package com.spbstu.raytracing.sceneObject;
 import com.spbstu.raytracing.math.Point;
 import com.spbstu.raytracing.math.Ray;
 import com.spbstu.raytracing.math.Vector;
-import com.sun.javafx.beans.annotations.NonNull;
+
 
 /**
- * Bounding box to fast detect no intersection
- * @autor vva
+ * @author vva
  */
 public class BoundingBox {
 
@@ -15,25 +14,13 @@ public class BoundingBox {
     double eps;
     double t;
 
-    /**
-     * Constructor which makes box by minimum  and maximum by all axises points
-     * @param min minimum by all axises point
-     * @param max maximum by all axises point
-     * @param eps intersection detection error
-     */
-    public BoundingBox(@NonNull final Point min,@NonNull final Point max,final double eps) {
+    public BoundingBox(final Point min, final Point max, final double eps) {
         this.min = min;
         this.max = max;
         this.eps = eps;
     }
 
-
-    /**
-     * Detects if bounding box has intersection
-     * @param ray ray to detect intersection
-     * @return true if bounding box has intersection,else - false
-     */
-    public boolean hasIntersection(@NonNull final Ray ray) {
+    public boolean hasIntersection(final Ray ray) {
         Point rayOrigin = ray.getPoint();
         Vector rayDirection = ray.getDirectionVector();
 

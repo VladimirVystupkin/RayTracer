@@ -4,8 +4,8 @@ import com.spbstu.raytracing.math.Point;
 import com.spbstu.raytracing.math.Vector;
 import com.spbstu.raytracing.sceneObject.BoundingBox;
 import com.spbstu.raytracing.sceneObject.ModelTriangle;
-import com.sun.istack.internal.Nullable;
-import com.sun.javafx.beans.annotations.NonNull;
+
+
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author vva
  */
-public class ModelObjectParser {
+public class ModelObjectParser2 {
 
     /**
      * Enumeration for bounding box attributes
@@ -53,7 +53,7 @@ public class ModelObjectParser {
          *
          * @param value parsable  *.obj file attribute value
          */
-        Descriptor(@NonNull final String value) {
+        Descriptor(final String value) {
             this.value = value;
         }
 
@@ -63,8 +63,8 @@ public class ModelObjectParser {
          * @param value parsable  *.obj file attribute value
          * @return parsable  *.obj file attribute
          */
-        @NonNull
-        public static Descriptor getDescriptor(@Nullable final String value) {
+
+        public static Descriptor getDescriptor(final String value) {
             for (Descriptor descriptor : Descriptor.values()) {
                 if (descriptor.value.equals(value)) {
                     return descriptor;
@@ -84,8 +84,8 @@ public class ModelObjectParser {
      *                                            unmappable byte sequence is read
      * @throws java.lang.IllegalArgumentException if file doesn't exist
      */
-    @NonNull
-    public static Relation<BoundingBox, List<ModelTriangle>> parse(@NonNull final String fileName) throws IOException {
+
+    public static Relation<BoundingBox, List<ModelTriangle>> parse(final String fileName) throws IOException {
         File file = new File(fileName);
         Path path = Paths.get(fileName);
         Map<BoundingBoxInfo, Double> boxInfoMap = new HashMap<>();
@@ -132,11 +132,12 @@ public class ModelObjectParser {
 
     /**
      * Splits line by space and tab
+     *
      * @param line line to split
      * @return list of splitted parts of line by space and tab
      */
-    @NonNull
-    public static List<String> split(@NonNull final String line) {
+
+    public static List<String> split(final String line) {
         String partsBySpace[] = line.split(" ");
         List<String> parts = new ArrayList<>();
         for (String partBySpace : partsBySpace) {
@@ -155,11 +156,12 @@ public class ModelObjectParser {
 
     /**
      * Parses line to vertex and puts it into vertexes list
-     * @param line line to parse
-     * @param vertexes vertexes list
+     *
+     * @param line       line to parse
+     * @param vertexes   vertexes list
      * @param boxInfoMap bounding box attributes map
      */
-    public static void parseVertex(@NonNull final String line,@NonNull List<Point> vertexes,@NonNull final Map<BoundingBoxInfo, Double> boxInfoMap) {
+    public static void parseVertex(final String line, List<Point> vertexes, final Map<BoundingBoxInfo, Double> boxInfoMap) {
         List<String> parts = split(line);
         Point point = new Point(Double.parseDouble(parts.get(0)), Double.parseDouble(parts.get(1)), Double.parseDouble(parts.get(2)));
         vertexes.add(point);
@@ -187,23 +189,25 @@ public class ModelObjectParser {
 
     /**
      * Parses line to normal and puts it into normals list
-     * @param line line to parse
+     *
+     * @param line    line to parse
      * @param normals normals list
      */
-    public static void parseNormal(@NonNull final String line,@NonNull List<Vector> normals) {
+    public static void parseNormal(final String line, List<Vector> normals) {
         List<String> parts = split(line);
         normals.add(new Vector(Double.parseDouble(parts.get(0)), Double.parseDouble(parts.get(1)), Double.parseDouble(parts.get(2))));
     }
 
     /**
      * Parses line to triangles and puts it into  triangles list
-     * @param line line to parse
+     *
+     * @param line      line to parse
      * @param vertexes  vertexes list
-     * @param normals normals list
+     * @param normals   normals list
      * @param triangles triangles list
      */
-    public static void parsePolygon(@NonNull final String line,@NonNull final List<Point> vertexes,
-                                    @NonNull final List<Vector> normals,@NonNull List<ModelTriangle> triangles) {
+    public static void parsePolygon(final String line, final List<Point> vertexes,
+                                    final List<Vector> normals, List<ModelTriangle> triangles) {
         List<String> parts = split(line);
         for (int i = 2; i < parts.size(); i++) {
             String v0Parts[] = parts.get(i - 2).split("/");

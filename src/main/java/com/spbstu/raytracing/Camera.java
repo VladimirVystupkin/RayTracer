@@ -4,15 +4,15 @@ import com.spbstu.raytracing.math.*;
 import com.spbstu.raytracing.math.Point;
 import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
-import com.sun.javafx.beans.annotations.NonNull;
+import com.spbstu.raytracing.sceneObject.attributes.Orientation;
+
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Camera defining class
- *
  * @author vva
  */
 public class Camera {
@@ -21,19 +21,9 @@ public class Camera {
     final Vector up;
     final Vector right;
     final FovInfo fovInfo;
-    Screen screen;
+    final Screen screen;
 
-
-    /**
-     * Constructor defining camera with location, direction and up vectors,fov info and screen
-     *
-     * @param location camera location
-     * @param dir      camera direction to screen center vector
-     * @param up       camera up direction vector
-     * @param fovInfo  camera fov info
-     * @param screen   camera screen
-     */
-    public Camera(@NonNull final Point location, @NonNull final Vector dir, @NonNull final Vector up, @NonNull final FovInfo fovInfo, @NonNull Screen screen) {
+    public Camera(final Point location, final Vector dir, final Vector up, final FovInfo fovInfo, Screen screen) {
         this.location = location;
         this.dir = dir.getNormalized();
         this.up = up.getNormalized();
@@ -42,19 +32,7 @@ public class Camera {
         this.screen = screen;
     }
 
-    /**
-     * Constructor defining camera with location, direction and up vectors,fov info and screen and object 3D conversation attributes
-     *
-     * @param location      camera location
-     * @param dir           camera direction to screen center vector
-     * @param up            camera up direction vector
-     * @param fovInfo       camera fov info
-     * @param screen        camera screen
-     * @param attributesMap map from attributes
-     * @see com.spbstu.raytracing.sceneObject.SceneObject
-     * @see com.spbstu.raytracing.sceneObject.attributes.Attribute
-     */
-    public Camera(@NonNull final com.spbstu.raytracing.math.Point location, @NonNull final Vector dir, @NonNull final Vector up, @NonNull final FovInfo fovInfo, @NonNull Screen screen, @NonNull final Map<Attributes.AttributeName, Attribute> attributesMap) {
+    public Camera(final com.spbstu.raytracing.math.Point location, final Vector dir, final Vector up, final FovInfo fovInfo, Screen screen, final Map<Attributes.AttributeName, Attribute> attributesMap) {
         Matrix matrix = Attributes.getCommonMatrix(attributesMap);
         this.location = Matrix.multiply(matrix, location);
         this.dir = Matrix.multiply(matrix, dir).getNormalized();
@@ -65,71 +43,60 @@ public class Camera {
     }
 
 
-    /**
-     * Sets pixel with defined color to camera screen
-     * @param pixelInfo pixel coordinates
-     * @param color pixel new color
-     */
-    public void setColor(@NonNull final Screen.PixelInfo pixelInfo, @NonNull final Color color) {
+    public void setColor(final Screen.PixelInfo pixelInfo, final Color color) {
         screen.setColor(pixelInfo, color.getRGB());
     }
 
-    /**
-     * Returns camera screen width
-     * @return camera screen width
-     */
     public int getScreenWidth() {
         return screen.width;
     }
 
-    /**
-     * Returns camera screen height
-     * @return camera screen height
-     */
+
     public int getScreenHeight() {
         return screen.height;
     }
 
-    /**
-     * Returns camera screen image
-     * @return camera screen image
-     */
-    @NonNull
+
     public BufferedImage getImage() {
         return screen.image;
     }
 
 
-    /**
-     * Returns emitted ray from camera to screen pixel by screen coordinates
-     * @param x camera screen x coordinate
-     * @param y camera screen x coordinate
-     * @return emitted ray from camera to screen pixel by screen coordinates
-     */
-    @NonNull
     public Ray emitRay(final int x, final int y) {
-        Vector xDir = Vector.add(dir, Vector.onNumber(right, Math.tan(Math.PI / 180 * fovInfo.fovX) * (x - screen.width / 2) / screen.width * 2));
-        Vector yDir = Vector.add(dir, Vector.onNumber(up, Math.tan(Math.PI / 180 * fovInfo.fovY) * (y - screen.height / 2) / screen.height * 2));
+        Vector xDir = Vector.add(dir, Vector.onNumber(right, Math.tan(Math.PI / 180 * fovInfo.fovX) * (screen.width / 2 - x) / screen.width * 2));
+        Vector yDir = Vector.add(dir, Vector.onNumber(up, Math.tan(Math.PI / 180 * fovInfo.fovY) * (screen.height / 2 - y) / screen.height * 2));
         Vector rayDir = Vector.add(xDir, yDir).getNormalized();
         return new Ray(location, rayDir);
     }
 
-    /**
-     * Class defining horizontal and vertical  camera fov
-     */
+
+    public static Camera fromMap(final HashMap cameraAttributes, final Screen screen) {
+        HashMap positionAttributes = (HashMap) cameraAttributes.get("position");
+        double x = positionAttributes.containsKey("x") ? Double.parseDouble(positionAttributes.get("x").toString()) : 0;
+        double y = positionAttributes.containsKey("y") ? Double.parseDouble(positionAttributes.get("y").toString()) : 0;
+        double z = positionAttributes.containsKey("z") ? Double.parseDouble(positionAttributes.get("z").toString()) : 0;
+        Point pos = new Point(x, y, z);
+        double fovX = Double.parseDouble(cameraAttributes.get("fov_x").toString());
+        double fovY = Double.parseDouble(cameraAttributes.get("fov_y").toString());
+        FovInfo info = new FovInfo(fovX, fovY);
+        HashMap orientationAttributes = (HashMap) cameraAttributes.get("orientation");
+        double h = orientationAttributes.containsKey("h") ? Double.parseDouble(orientationAttributes.get("h").toString()) : 0;
+        double p = orientationAttributes.containsKey("p") ? Double.parseDouble(orientationAttributes.get("p").toString()) : 0;
+        double r = orientationAttributes.containsKey("r") ? Double.parseDouble(orientationAttributes.get("r").toString()) : 0;
+        Map<Attributes.AttributeName, Attribute> cameraOrientation = new HashMap<>();
+        cameraOrientation.put(Attributes.AttributeName.ORIENTATION, new Orientation(h, p, r));
+        return new Camera(pos, Matrix.multiply(Attributes.getCommonMatrix(cameraOrientation), new Vector(0, 0, 1)), new Vector(0, 1, 0), info, screen);
+    }
+
     public static class FovInfo {
         final double fovX;
         final double fovY;
 
-        /**
-         * Default Constructor defining horizontal and vertical  camera fov
-         * @param fovX horizontal camera fov
-         * @param fovY vertical camera fov
-         */
         public FovInfo(double fovX, double fovY) {
             this.fovX = fovX;
             this.fovY = fovY;
         }
     }
+
 
 }
