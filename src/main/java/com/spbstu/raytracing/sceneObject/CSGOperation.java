@@ -25,17 +25,6 @@ public enum CSGOperation {
         this.operationResult = operationResult;
     }
 
-    public List<IntersectionInfo> getIntersectionInfo(final Ray ray, final SceneObject left, final SceneObject right) {
-        return operationResult.getIntersectionInfo(ray, left, right);
-    }
-
-    private enum CurrentState {
-        NONE,
-        IN,
-        DOUBLE_IN
-    }
-
-
     private static List<Relation<SceneObject, IntersectionInfo>> sortByDistance(final Ray ray, List<Relation<SceneObject, IntersectionInfo>> relations) {
         if (relations.size() == 0) {
             return new ArrayList<>();
@@ -51,6 +40,17 @@ public enum CSGOperation {
             }
         });
         return relations;
+    }
+
+    public List<IntersectionInfo> getIntersectionInfo(final Ray ray, final SceneObject left, final SceneObject right) {
+        return operationResult.getIntersectionInfo(ray, left, right);
+    }
+
+
+    private enum CurrentState {
+        NONE,
+        IN,
+        DOUBLE_IN
     }
 
     private interface CSGOperationResult {
@@ -150,6 +150,8 @@ public enum CSGOperation {
             List<IntersectionInfo> leftIntersectionInfoList = left.getIntersectionInfo(ray);
             List<IntersectionInfo> rightIntersectionInfoList = right.getIntersectionInfo(ray);
             List<Relation<SceneObject, IntersectionInfo>> relations = new ArrayList<>();
+
+
             for (IntersectionInfo info : leftIntersectionInfoList) {
                 relations.add(new Relation<SceneObject, IntersectionInfo>(left, info));
             }
@@ -179,7 +181,14 @@ public enum CSGOperation {
                         } else {
                             currentStateWithObject = new Relation<>(CurrentState.DOUBLE_IN, relation.getKey());
                             if (relation.getKey() == right) {
-                                intersectionInfoList.add(relation.getValue());
+                                IntersectionInfo info = relation.getValue();
+                                IntersectionInfo old = intersectionInfoList.size() <= 0 ? null : intersectionInfoList.get(intersectionInfoList.size() - 1);
+                                if (old != null && Point.distance(old.getPoint(), info.getPoint()) < 1e-5) {
+                                    intersectionInfoList.remove(old);
+                                } else {
+                                    intersectionInfoList.add(new IntersectionInfo(info.getPoint(), Vector.onNumber(info.getNormal(), -1), info.getMaterial()));
+                                }
+                                //  intersectionInfoList.add(relation.getValue());
                             }
                         }
                         break;
@@ -188,13 +197,15 @@ public enum CSGOperation {
                                 left);
                         if (relation.getKey() == right) {
                             IntersectionInfo info = relation.getValue();
-                            intersectionInfoList.add(new IntersectionInfo(info.getPoint(), Vector.onNumber(info.getNormal(), -1), info.getMaterial()));
+                            IntersectionInfo old = intersectionInfoList.size() <= 0 ? null : intersectionInfoList.get(intersectionInfoList.size() - 1);
+                            if (old != null && Point.distance(old.getPoint(), info.getPoint()) < 1e-5) {
+                                intersectionInfoList.remove(old);
+                            } else {
+                                intersectionInfoList.add(new IntersectionInfo(info.getPoint(), Vector.onNumber(info.getNormal(), -1), info.getMaterial()));
+                            }
                         }
                         break;
                 }
-            }
-            if (intersectionInfoList.size() > 0 && intersectionInfoList.size() % 2 == 1) {
-                System.out.println("intersectionInfoList = " + intersectionInfoList);
             }
             return intersectionInfoList;
         }

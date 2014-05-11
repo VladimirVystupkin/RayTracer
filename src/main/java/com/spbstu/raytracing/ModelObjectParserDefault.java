@@ -10,7 +10,6 @@ import com.spbstu.raytracing.sceneObject.attributes.Attribute;
 import com.spbstu.raytracing.sceneObject.attributes.Attributes;
 
 
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -26,39 +25,6 @@ import java.util.Map;
  * @author vva
  */
 public class ModelObjectParserDefault {
-
-    private enum BoundingBoxInfo {
-        MIN_X,
-        MIN_Y,
-        MIN_Z,
-        MAX_X,
-        MAX_Y,
-        MAX_Z
-    }
-
-    private enum Descriptor {
-        VERTEX("v"),
-        NORMAL("vn"),
-        POLYGON("f"),
-        UNKNOWN("no matter");
-
-        String value;
-
-        Descriptor(final String value) {
-            this.value = value;
-        }
-
-
-        public static Descriptor getDescriptor(final String value) {
-            for (Descriptor descriptor : Descriptor.values()) {
-                if (descriptor.value.equals(value)) {
-                    return descriptor;
-                }
-            }
-            return UNKNOWN;
-        }
-    }
-
 
     public static Relation<BoundingBox, List<ModelTriangle>> parse(final String fileName) throws IOException {
         File file = new File(fileName);
@@ -103,7 +69,6 @@ public class ModelObjectParserDefault {
                 new Point(boxInfoMap.get(BoundingBoxInfo.MIN_X), boxInfoMap.get(BoundingBoxInfo.MIN_Y), boxInfoMap.get(BoundingBoxInfo.MIN_Z)),
                 new Point(boxInfoMap.get(BoundingBoxInfo.MAX_X), boxInfoMap.get(BoundingBoxInfo.MAX_Y), boxInfoMap.get(BoundingBoxInfo.MAX_Z)), 1e-5), triangles);
     }
-
 
     public static List<String> split(final String line) {
         String partsBySpace[] = line.split(" ");
@@ -156,11 +121,43 @@ public class ModelObjectParserDefault {
     public static void parsePolygon(final String line, final List<Point> vertexes,
                                     final List<Vector> normals, List<ModelTriangle> triangles) {
         List<String> parts = split(line);
-        Triangle triangle = new Triangle(vertexes.get(-1 + Integer.parseInt(parts.get(0))),
-                vertexes.get(-1 + Integer.parseInt(parts.get(1))), vertexes.get(-1 + Integer.parseInt(parts.get(2)))
-                , new Material(new Material.Component(0, 0, 0), new Material.Component(0, 0, 0), new Material.Component(0, 0, 0), 0), new HashMap<Attributes.AttributeName, Attribute>());
+//        Triangle triangle = new Triangle(vertexes.get(-1 + Integer.parseInt(parts.get(0))),
+//                vertexes.get(-1 + Integer.parseInt(parts.get(1))), vertexes.get(-1 + Integer.parseInt(parts.get(2)))
+//                , new Material(new Material.Component(0, 0, 0), new Material.Component(0, 0, 0), new Material.Component(0, 0, 0), 0), new HashMap<Attributes.AttributeName, Attribute>());
         triangles.add(new ModelTriangle(vertexes.get(-1 + Integer.parseInt(parts.get(0))), vertexes.get(-1 + Integer.parseInt(parts.get(1))), vertexes.get(-1 + Integer.parseInt(parts.get(2)))
-                , triangle.getNormal(), triangle.getNormal(), triangle.getNormal()));
+        ));
+    }
+
+    private enum BoundingBoxInfo {
+        MIN_X,
+        MIN_Y,
+        MIN_Z,
+        MAX_X,
+        MAX_Y,
+        MAX_Z
+    }
+
+    private enum Descriptor {
+        VERTEX("v"),
+        NORMAL("vn"),
+        POLYGON("f"),
+        UNKNOWN("no matter");
+
+        String value;
+
+        Descriptor(final String value) {
+            this.value = value;
+        }
+
+
+        public static Descriptor getDescriptor(final String value) {
+            for (Descriptor descriptor : Descriptor.values()) {
+                if (descriptor.value.equals(value)) {
+                    return descriptor;
+                }
+            }
+            return UNKNOWN;
+        }
     }
 
 }

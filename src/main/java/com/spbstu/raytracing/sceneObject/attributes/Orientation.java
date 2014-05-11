@@ -20,9 +20,9 @@ public class Orientation implements Attribute {
 
     public Matrix getMatrix() {
         Matrix matrix = Matrix.getIdentity();
-        Matrix rotationX = Matrix.getRotationMatrix(h, Matrix.Axis.X_AXIS);
-        Matrix rotationY = Matrix.getRotationMatrix(p, Matrix.Axis.Y_AXIS);
-        Matrix rotationZ = Matrix.getRotationMatrix(r, Matrix.Axis.Z_AXIS);
-        return Matrix.multiply(Matrix.multiply(Matrix.multiply(matrix, rotationX), rotationY), rotationZ);
+        Matrix rotationH = Matrix.getRotationMatrix(-h, Matrix.Axis.Z_AXIS);
+        Matrix rotationP = Matrix.getRotationMatrix(-p, Matrix.Axis.X_AXIS);
+        Matrix rotationR = Matrix.getRotationMatrix(r, Matrix.Axis.Y_AXIS);
+        return Matrix.multiply(rotationH,rotationP,rotationR);
     }
 }

@@ -5,7 +5,6 @@ import com.spbstu.raytracing.sceneObject.IntersectionInfo;
 import com.spbstu.raytracing.sceneObject.SceneObject;
 
 
-
 import java.util.*;
 
 /**
@@ -47,6 +46,7 @@ public class Ray {
         Double minDistance = null;
         for (IntersectionInfo info : intersectionInfos) {
             Vector toCrossPoint = new Vector(point, info.getPoint());
+
             if (Vector.scalar(toCrossPoint, directionVector) >= 0) {
                 if (minDistance == null) {
                     closestInfo = info;
@@ -60,6 +60,11 @@ public class Ray {
                 }
             }
         }
+//        for (IntersectionInfo info : intersectionInfos) {
+//            if (info.getNormal().getZ() == 0 && info.getPoint().getY()<0 && closestInfo != info ) {
+//                System.out.println("");
+//            }
+//        }
         return closestInfo;
     }
 

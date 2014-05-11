@@ -43,15 +43,14 @@ public class ModelObject extends SceneObject {
         Point endPoint = Point.translate(startPoint, ray.getDirectionVector());
         Ray transformedRay = new Ray(Matrix.multiply(matrix, startPoint),
                 Matrix.multiply(matrix, endPoint));
-        if (!boundingBox.hasIntersection(transformedRay)) {
-            return intersectionInfoList;
-        }
+        if(!boundingBox.hasIntersection(transformedRay)){return  intersectionInfoList;}
         for (IntersectionInfo info : getStaticIntersectionInfo(transformedRay)) {
             Point intersectionPoint = Matrix.multiply(inverted, info.getPoint());
             Point normalStartPoint = new Point(0, 0, 0);
             Point normalEndPoint = info.getNormal().toPoint3D();
             Vector normal = new Vector(Matrix.multiply(inverted, normalStartPoint),
                     Matrix.multiply(inverted, normalEndPoint)).getNormalized();
+
             intersectionInfoList.add(new IntersectionInfo(intersectionPoint, normal, info.getMaterial()));
         }
         return intersectionInfoList;

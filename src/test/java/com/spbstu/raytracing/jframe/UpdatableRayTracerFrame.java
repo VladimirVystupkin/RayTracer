@@ -33,7 +33,7 @@ public class UpdatableRayTracerFrame extends JFrame {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                RayTracer.RayTracerInfo rayTracerInfo = new RayTracer.RayTracerInfo(Color.WHITE, RayTracer.RayTracerInfo.LightningStyle.PHONG_BLINN, 100);
+                RayTracer.RayTracerInfo rayTracerInfo = new RayTracer.RayTracerInfo(Color.BLACK, RayTracer.RayTracerInfo.LightningStyle.PHONG, 100);
                 try {
                     new RayTracer(rayTracerInfo, camera, sceneObjects, lightSources).apply();
                     ImageIO.write(camera.getImage(), "bmp", new File("result.bmp"));

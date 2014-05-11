@@ -27,7 +27,7 @@ public class Camera {
         this.location = location;
         this.dir = dir.getNormalized();
         this.up = up.getNormalized();
-        this.right = Vector.cross(dir, up);
+        this.right = Vector.cross(dir, up).getNormalized();
         this.fovInfo = fovInfo;
         this.screen = screen;
     }
@@ -41,34 +41,6 @@ public class Camera {
         this.fovInfo = fovInfo;
         this.screen = screen;
     }
-
-
-    public void setColor(final Screen.PixelInfo pixelInfo, final Color color) {
-        screen.setColor(pixelInfo, color.getRGB());
-    }
-
-    public int getScreenWidth() {
-        return screen.width;
-    }
-
-
-    public int getScreenHeight() {
-        return screen.height;
-    }
-
-
-    public BufferedImage getImage() {
-        return screen.image;
-    }
-
-
-    public Ray emitRay(final int x, final int y) {
-        Vector xDir = Vector.add(dir, Vector.onNumber(right, Math.tan(Math.PI / 180 * fovInfo.fovX) * (screen.width / 2 - x) / screen.width * 2));
-        Vector yDir = Vector.add(dir, Vector.onNumber(up, Math.tan(Math.PI / 180 * fovInfo.fovY) * (screen.height / 2 - y) / screen.height * 2));
-        Vector rayDir = Vector.add(xDir, yDir).getNormalized();
-        return new Ray(location, rayDir);
-    }
-
 
     public static Camera fromMap(final HashMap cameraAttributes, final Screen screen) {
         HashMap positionAttributes = (HashMap) cameraAttributes.get("position");
@@ -85,7 +57,36 @@ public class Camera {
         double r = orientationAttributes.containsKey("r") ? Double.parseDouble(orientationAttributes.get("r").toString()) : 0;
         Map<Attributes.AttributeName, Attribute> cameraOrientation = new HashMap<>();
         cameraOrientation.put(Attributes.AttributeName.ORIENTATION, new Orientation(h, p, r));
-        return new Camera(pos, Matrix.multiply(Attributes.getCommonMatrix(cameraOrientation), new Vector(0, 0, 1)), new Vector(0, 1, 0), info, screen);
+        //  return new Camera(pos, Matrix.multiply(Attributes.getCommonMatrix(cameraOrientation), Vector.onNumber(pos.toVector3D(),-1).getNormalized()), new Vector(0, 1, 0), info, screen);
+        //Vector dir = Vector.onNumber(pos.toVector3D(), -1).getNormalized();
+        //double cosA = Vector.scalar(dir, new Vector(0, 1, 0));
+        //double sinA = Math.sqrt(1 - cosA * cosA);
+        Vector dir = Matrix.multiply(Attributes.getCommonMatrix(cameraOrientation), new Vector(0, 1, 0));
+        Vector up = Matrix.multiply(Attributes.getCommonMatrix(cameraOrientation), new Vector(0, 0, 1));
+        return new Camera(pos, dir, up, info, screen);
+    }
+
+    public void setColor(final Screen.PixelInfo pixelInfo, final Color color) {
+        screen.setColor(pixelInfo, color.getRGB());
+    }
+
+    public int getScreenWidth() {
+        return screen.width;
+    }
+
+    public int getScreenHeight() {
+        return screen.height;
+    }
+
+    public BufferedImage getImage() {
+        return screen.image;
+    }
+
+    public Ray emitRay(final int x, final int y) {
+        Vector xDir = Vector.onNumber(right, Math.tan(Math.PI / 180 * fovInfo.fovX / 2) * (x - screen.width / 2) / screen.width);
+        Vector zDir = Vector.onNumber(up, Math.tan(Math.PI / 180 * fovInfo.fovY / 2) * (screen.height / 2 - y) / screen.height);
+        Vector rayDir = Vector.add(dir, xDir, zDir).getNormalized();
+        return new Ray(location, rayDir);
     }
 
     public static class FovInfo {

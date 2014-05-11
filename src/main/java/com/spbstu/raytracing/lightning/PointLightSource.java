@@ -24,26 +24,6 @@ public class PointLightSource implements LightSource {
         this.range = range;
     }
 
-    @Override
-
-    public Vector getOnPointDirection(final Point point) {
-        return new Vector(location, point).getNormalized();
-    }
-
-    @Override
-
-    public Color getColor() {
-        return color;
-    }
-
-
-    @Override
-    public double getIntensity(final Point point) {
-        double distance = new Vector(location, point).length();
-        return Math.max(1 - Math.pow(distance / range, 1.0 / fadeExponent), 0);
-    }
-
-
     public static PointLightSource fromMap(final HashMap hashMap) {
         HashMap positionAttributes = (HashMap) hashMap.get("position");
         double x = positionAttributes.containsKey("x") ? Double.parseDouble(positionAttributes.get("x").toString()) : 0;
@@ -58,5 +38,25 @@ public class PointLightSource implements LightSource {
         double distance = Double.parseDouble(hashMap.get("distance").toString());
         double fadeExp = Double.parseDouble(hashMap.get("fade_exponent").toString());
         return new PointLightSource(pos, color, fadeExp, distance);
+    }
+
+    @Override
+
+    public Vector getOnPointDirection(final Point point) {
+        return new Vector(location, point).getNormalized();
+    }
+
+    @Override
+
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public double getIntensity(final Point point) {
+        double distance = new Vector(location, point).length();
+        if (distance > range) return 0;
+        return Math.pow(1 - distance / range, fadeExponent);
+//        return Math.max(1 - Math.pow(distance / range, 1.0 / fadeExponent), 0);
     }
 }

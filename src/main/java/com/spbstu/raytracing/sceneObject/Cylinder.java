@@ -19,9 +19,12 @@ public class Cylinder extends SceneObject {
     public Cylinder(final double r, final double h, final Material material, final Map<Attributes.AttributeName, Attribute> attributesMap) {
         super(material, attributesMap);
         this.r = r;
-        this.h = h / 2;
+        this.h = h;
     }
 
+    public static Cylinder fromMap(HashMap hashMap, Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
+        return new Cylinder(Double.parseDouble(hashMap.get("radius").toString()), Double.parseDouble(hashMap.get("height").toString()), material, attributesMap);
+    }
 
     Vector getNormal(Point point, boolean isCup) {
         if (!isCup) {
@@ -42,14 +45,15 @@ public class Cylinder extends SceneObject {
         double a = (m * m + n * n), b = 2 * (x0 * m + y0 * n), c = (x0 * x0 + y0 * y0 - r * r);
         double discr = b * b - 4 * a * c;
         List<IntersectionInfo> points = new ArrayList<>();
+
         if (discr >= 0) {
             double t1 = (-b - Math.sqrt(discr)) / (2 * a);
             double t2 = (-b + Math.sqrt(discr)) / (2 * a);
-            if (Math.abs(z0 + p * t1) < h) {
+            if (z0 + p * t1 < h && z0 + p * t1 > 0) {
                 Point point = new Point(x0 + m * t1, y0 + n * t1, z0 + p * t1);
                 points.add(new IntersectionInfo(point, getNormal(point, false), material));
             }
-            if (Math.abs(z0 + p * t2) < h) {
+            if (z0 + p * t2 < h && z0 + p * t2 > 0) {
                 Point point = new Point(x0 + m * t2, y0 + n * t2, z0 + p * t2);
                 points.add(new IntersectionInfo(point, getNormal(point, false), material));
             }
@@ -62,20 +66,15 @@ public class Cylinder extends SceneObject {
                 Point point = new Point(x3, y3, h);
                 points.add(new IntersectionInfo(point, getNormal(point, true), material));
             }
-            double t4 = (-h - z0) / p;
+            double t4 = (- z0) / p;
             double x4 = x0 + m * t4;
             double y4 = y0 + n * t4;
             if (x4 * x4 + y4 * y4 <= r * r) {
-                Point point = new Point(x4, y4, -h);
+                Point point = new Point(x4, y4, 0);
                 points.add(new IntersectionInfo(point, getNormal(point, true), material));
             }
         }
 
         return points;
-    }
-
-
-    public static Cylinder fromMap(HashMap hashMap, Material material, Map<Attributes.AttributeName, Attribute> attributesMap) {
-        return new Cylinder(Double.parseDouble(hashMap.get("radius").toString()), Double.parseDouble(hashMap.get("height").toString()), material, attributesMap);
     }
 }

@@ -23,14 +23,6 @@ import java.util.Map;
  */
 public class SceneLoader {
 
-    public static enum ResultInfo {
-        CAMERA,
-        SCENE_OBJECTS,
-        LIGHT_SOURCES,
-        RAY_TRACER_INFO
-    }
-
-
     public Map<ResultInfo, Object> loadFromStream(InputStream inputStream, final Screen screen, final RayTracer.RayTracerInfo rayTracerInfo) throws IOException {
         Camera camera = null;
         List<LightSource> lightSources = new ArrayList<>();
@@ -41,6 +33,9 @@ public class SceneLoader {
             HashMap hashMap = (HashMap) o;
             String key = (String) hashMap.keySet().iterator().next();
             switch (key) {
+                case "shading_type":
+                    rayTracerInfo.lightningStyle = "blinn_phong﻿".equals(hashMap.get("shading_type")) ? RayTracer.RayTracerInfo.LightningStyle.PHONG_BLINN : RayTracer.RayTracerInfo.LightningStyle.PHONG;
+                    break;
                 case "camera":
                     camera = Camera.fromMap((HashMap) hashMap.get("camera"), screen);
                     break;
@@ -66,5 +61,13 @@ public class SceneLoader {
         resultInfo.put(ResultInfo.LIGHT_SOURCES, lightSources);
         resultInfo.put(ResultInfo.RAY_TRACER_INFO, rayTracerInfo);
         return resultInfo;
+    }
+
+
+    public static enum ResultInfo {
+        CAMERA,
+        SCENE_OBJECTS,
+        LIGHT_SOURCES,
+        RAY_TRACER_INFO
     }
 }

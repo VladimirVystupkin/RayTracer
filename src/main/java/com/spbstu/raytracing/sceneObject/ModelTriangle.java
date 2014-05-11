@@ -30,6 +30,18 @@ public class ModelTriangle {
         v13 = new Vector(v1, v3);
     }
 
+    public ModelTriangle(final Point v1, final Point v2, final Point v3
+    ) {
+        this.v1 = v1;
+        this.v2 = v2;
+        this.v3 = v3;
+        this.n1 = Vector.cross(new Vector(v1, v2), new Vector(v2, v3)).getNormalized();
+        this.n2 = n1;
+        this.n3 = n1;
+        v12 = new Vector(v1, v2);
+        v13 = new Vector(v1, v3);
+    }
+
 
     public List<IntersectionInfo> getIntersectionInfo(final Ray ray, final Material material) {
         List<IntersectionInfo> intersectionInfoList = new ArrayList<>();
@@ -44,7 +56,7 @@ public class ModelTriangle {
         if (u > 0 && u < 1) {
             double v = Vector.scalar(Q, ray.getDirectionVector()) / c;
             if (v > 0 && (u + v < 1)) {
-                Vector normal = Vector.tripleLinearCombination(u, v, 1 - u - v, n1, n2, n3).getNormalized();
+                Vector normal = n1;//Vector.tripleLinearCombination(u, v, 1 - u - v, n1, n2, n3).getNormalized();
                 Point intersectionPoint = Point.tripleLinearCombination(1 - u - v, u, v, v1, v2, v3);
                 intersectionInfoList.add(new IntersectionInfo(intersectionPoint, normal, material));
             }

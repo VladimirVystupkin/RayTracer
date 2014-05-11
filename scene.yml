@@ -1,9 +1,11 @@
+﻿#Тип освещения
+- shading_type: blinn_phong﻿
 # Камера
 - camera:
-   position: {x: 7.5, y: 20, z: -20}
-   orientation: {h: -45, p: -10, r: 0}
-   fov_x: 45
-   fov_y: 45
+   position: {x: 10, y: -15, z: 15}
+   orientation: {h: 10, p: -45, r: 0}
+   fov_x: 90
+   fov_y: 90
 # Материалы
 # Серый   отражающий с белым бликом
 - &m_gray material:
@@ -18,7 +20,7 @@
    diffuse:  {r: 0.5, g: 0.5, b: 0.5}
    specular: {r: 1, g: 1, b: 1}
    refraction_factor: 1
-   refraction_index: 1.4
+   refraction_index: 1.0
    specular_power: 30
 # Оранжевый матовый
 - &m_orange material:
@@ -35,48 +37,43 @@
 # Источники света
 # "Солнце" в зените
 - directional_light:
-   direction: {x: 0, y: 0, z: 1}
+   direction: {x: 0, y: 0, z: -1}
    color    : {r: 1, g: 1, b: 1}
 # Точечный источник света, желтый
 - point_light:
-   position: {x: 1, y: 4, z: 5}
+   position: {x: 1, y: 5, z: 4}
    color   : {r: 1, g: 1, b: 0}
    distance: 20
    fade_exponent: 2
-# Точечный источник света, зеленый
-- point_light:
-   position: {x: 6, y: 4, z: 2}
-   color   : {r: 0, g: 1, b: 0}
-   distance: 20
-   fade_exponent: 2
+
 # Точечный источник света, красный
 - point_light:
-   position: {x: 9, y: 3, z: 0}
+   position: {x: 9, y: 0, z: 3}
    color   : {r: 1, g: 0, b: 0}
    distance: 20
    fade_exponent: 2
 # Сцена
 - node:
    - node: # Пьедестал
-      - lcs: {y: -0.5}
+      - lcs: {z: -0.5}
       - *m_gray
       - cylinder:
          radius: 6
          height: 1
    - node: # Кролик
-      - lcs: {y: -0.61, sx: 15, sy: 15, sz: 15}
+      - lcs: {p: -90, sx: 15, sy: 15, sz: 15}
       - *m_orange
       - obj_model:
          file_name: "stanford_bunny.obj"
    - node:
       - lcs: {x: 7}
       - node:
-         - lcs: {y: 2, p: 90}
+         - lcs: {z: 2, r: 45}
          - csg_difference: # Цилиндр с вырезанным из центра цилиндром
             left_node:
                - *m_green
                - cylinder:
-                  radius: 4
+                  radius: 2
                   height: 0.1
             right_node:
                - *m_green
@@ -84,12 +81,12 @@
                   radius: 1
                   height: 0.2
    - node:
-      - lcs: {x: 7, y: 3, z: -2}
+      - lcs: {x: 7, y: -3, z: 3}
       - *m_gray_refracted
       - sphere:
           radius: 1
    - node:
-      - lcs: {x: -5, y: 2, z: -3}
+      - lcs: {p: 30, x: 2, y: 3, z: 2}
       - node:
          - csg_difference:
              left_node:
@@ -99,7 +96,7 @@
              right_node:
                 - csg_union:
                     left_node:
-                       - lcs: {h: 90}
+                       - lcs: {p: 90, y: -1.5}
                        - *m_green
                        - cylinder:
                           radius: 0.5
@@ -107,12 +104,13 @@
                     right_node:
                        - csg_union:
                           left_node:
+                             - lcs: {z: -1.5}
                              - *m_green
                              - cylinder:
                                 radius: 0.5
                                 height: 3
                           right_node:
-                             - lcs: {r: 90}
+                             - lcs: {r: 90, x: 1.5}
                              - *m_green
                              - cylinder:
                                 radius: 0.5

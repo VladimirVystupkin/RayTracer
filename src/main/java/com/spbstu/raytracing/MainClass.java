@@ -18,6 +18,12 @@ public class MainClass {
 
 
     public static void main(String args[]) {
+        args = new String[5];
+        args[0] = "--scene=scene_example(2).yml";
+        args[1] = "--resolution_x=1024";
+        args[2] = "--resolution_y=1024";
+        args[3] = "--output=result.bmp";
+        args[4] = "--trace_depth=3";
         String filePath = null;
         String outputFile = null;
         int resX = 0;
@@ -58,7 +64,7 @@ public class MainClass {
                 break;
             }
         }
-        RayTracer.RayTracerInfo rayTracerInfo = new RayTracer.RayTracerInfo(Color.BLACK, RayTracer.RayTracerInfo.LightningStyle.PHONG, traceDepth);
+        RayTracer.RayTracerInfo rayTracerInfo = new RayTracer.RayTracerInfo(Color.GRAY, RayTracer.RayTracerInfo.LightningStyle.PHONG, traceDepth);
         try {
             System.out.println("Start parsing " + filePath);
             Map<SceneLoader.ResultInfo, Object> resMap = new SceneLoader().loadFromStream(Files.newInputStream(Paths.get(filePath)), new Screen(resX, resY), rayTracerInfo);

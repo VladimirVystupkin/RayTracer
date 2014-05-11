@@ -23,17 +23,6 @@ public class CSGNode extends SceneObject {
         this.childs = childs;
     }
 
-    @Override
-
-    public List<IntersectionInfo> getStaticIntersectionInfo(final Ray ray) {
-        List<IntersectionInfo> intersectionInfoList = new ArrayList<>();
-        for (SceneObject child : childs) {
-            intersectionInfoList.addAll(child.getIntersectionInfo(ray));
-        }
-        return intersectionInfoList;
-    }
-
-
     public static CSGNode fromMap(final ArrayList list, final Map<Integer, Material> materialMap) throws IOException {
         double x = 0, y = 0, z = 0, h = 0, p = 0, r = 0, sx = 1, sy = 1, sz = 1;
         Material material = null;
@@ -83,7 +72,7 @@ public class CSGNode extends SceneObject {
                         break;
                     case "cylinder":
                         Map<Attributes.AttributeName, Attribute> cylinderAttributes = new HashMap<>();
-                        cylinderAttributes.put(Attributes.AttributeName.ORIENTATION, new Orientation(90, 0, 0));
+//                        cylinderAttributes.put(Attributes.AttributeName.TRANSLATION, new Translation(0, 0, -Double.parseDouble(((HashMap) ((HashMap) object).get("cylinder")).get("height").toString()) / 2));
                         childs.add(Cylinder.fromMap((HashMap) ((HashMap) object).get("cylinder"), material, cylinderAttributes));
                         break;
                     case "plane":
@@ -91,15 +80,15 @@ public class CSGNode extends SceneObject {
                         break;
                     case "torus":
                         Map<Attributes.AttributeName, Attribute> torusAttributes = new HashMap<>();
-                        torusAttributes.put(Attributes.AttributeName.ORIENTATION, new Orientation(0, 90, 0));
-                        childs.add(Cylinder.fromMap((HashMap) ((HashMap) object).get("torus"), material, torusAttributes));
+                        //torusAttributes.put(Attributes.AttributeName.ORIENTATION, new Orientation(0, 90, 0));
+                        childs.add(Torus.fromMap((HashMap) ((HashMap) object).get("torus"), material, torusAttributes));
                         break;
                     case "triangle":
                         childs.add(Triangle.fromMap((HashMap) ((HashMap) object).get("triangle"), material, new HashMap<Attributes.AttributeName, Attribute>()));
                         break;
                     case "cone":
                         Map<Attributes.AttributeName, Attribute> coneAttributes = new HashMap<>();
-                        coneAttributes.put(Attributes.AttributeName.ORIENTATION, new Orientation(90, 0, 0));
+                        // coneAttributes.put(Attributes.AttributeName.ORIENTATION, new Orientation(90, 0, 0));
                         childs.add(Cone.fromMap((HashMap) ((HashMap) object).get("cone"), material, coneAttributes));
                         break;
                     case "obj_model":
@@ -120,5 +109,15 @@ public class CSGNode extends SceneObject {
             }
         }
         return new CSGNode(childs, attributes);
+    }
+
+    @Override
+
+    public List<IntersectionInfo> getStaticIntersectionInfo(final Ray ray) {
+        List<IntersectionInfo> intersectionInfoList = new ArrayList<>();
+        for (SceneObject child : childs) {
+            intersectionInfoList.addAll(child.getIntersectionInfo(ray));
+        }
+        return intersectionInfoList;
     }
 }
