@@ -211,12 +211,8 @@ public class RayTracer {
 
         @Override
         public void run() {
-
             for (int x = threadNumber; x < camera.getScreenWidth(); x += threadNumbers) {
                 for (int y = 0; y < camera.getScreenHeight(); y++) {
-                    if (x == 162 && y == 232) {
-                        System.out.println("y = " + y);
-                    }
                     camera.setColor(new Screen.PixelInfo(x, y), getColor(camera.emitRay(x, y), 1, 1, 1));
                 }
             }
