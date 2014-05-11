@@ -14,7 +14,9 @@ import java.util.Map;
 public class ParserTest {
 
     public static void main(String[] args) throws IOException {
-        RayTracer.RayTracerInfo rayTracerInfo = new RayTracer.RayTracerInfo(Color.WHITE, RayTracer.RayTracerInfo.LightningStyle.PHONG_BLINN, 100);
+        RayTracer.RayTracerInfo rayTracerInfo = new RayTracer.RayTracerInfo(Color.WHITE, RayTracer.RayTracerInfo.LightningStyle.PHONG, 3);
+//        new UpdatableRayTracerFrame(new SceneLoader().loadFromStream(Files.newInputStream(Paths.get("scene_test_hpr.yaml")), new Screen(500, 500), rayTracerInfo));
         new UpdatableRayTracerFrame(new SceneLoader().loadFromStream(Files.newInputStream(Paths.get("scene.yml")), new Screen(500, 500), rayTracerInfo));
+//        System.out.println("rayTracerInfo = " + rayTracerInfo);
     }
 }
